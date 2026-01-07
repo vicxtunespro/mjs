@@ -84,7 +84,8 @@ const CLOUDINARY_CLOUD_NAME = 'dzidperyt';
 
 export default function StudentRegistrationPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus1, setSubmitStatus1] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus2, setSubmitStatus2] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Photo states - store files and previews only, not uploaded URLs
@@ -97,12 +98,26 @@ export default function StudentRegistrationPage() {
   const [guardian2PhotoFile, setGuardian2PhotoFile] = useState<File | null>(null);
   const [guardian2PhotoPreview, setGuardian2PhotoPreview] = useState<string>('');
 
+  const [continuingGuardian1PhotoFile, setContinuingGuardian1PhotoFile] = useState<File | null>(null);
+  const [contuinuingGuardian1PhotoPreview, setContinuingGuardian1PhotoPreview] = useState<string>('');
+
+  const [contuinuingGuardian2PhotoFile, setContinuingGuardian2PhotoFile] = useState<File | null>(null);
+  const [contuinuingGuardian2PhotoPreview, setContinuingGuardian2PhotoPreview] = useState<string>('');
+
+  const [contuinuingGuardian1PhotoLink, setContinuingGuardian1PhotoLink] = useState<string>('');
+  const [contuinuingGuardian2PhotoLink, setContinuingGuardian2PhotoLink] = useState<string>(''); 
+
   // check for data uploads
   const [guardian1_not_saved, setGuardian1_not_saved] = useState<boolean>(true);
   const [guardian2_not_saved, setguardian2_not_saved] = useState<boolean>(true);
-  const [isContinuingParent, setIsContinuingParent] = useState<boolean>(false);
-  const [continuingParentID, setContinuingParentID] = useState<string>('')
-  const [verifyState, setVerifyState] = useState<VerifyState>("idle");
+  const [isContinuingGuardian1, setIsContinuingGuardian1] = useState<boolean>(false);
+  const [isContinuingGuardian2, setIsContinuingGuardian2] = useState<boolean>(false);
+  const [verifyState1, setVerifyState1] = useState<VerifyState>("idle");
+  const [verifyState2, setVerifyState2] = useState<VerifyState>("idle");
+
+  //Temperary storage for contuinuing guardian ID
+  const [continuingGuardian1ID, setContinuingGuardian1ID] = useState<string>('')
+  const [continuingGuardian2ID, setContinuingGuardian2ID] = useState<string>('')
 
 
   const [studentData, setStudentData] = useState<StudentData>({
@@ -264,10 +279,34 @@ export default function StudentRegistrationPage() {
   const handleGuardian2PhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setGuardian2PhotoFile(file);
+      setGuardian1PhotoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setGuardian2PhotoPreview(reader.result as string);
+        setGuardian1PhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleContinuingGuardian1PhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setContinuingGuardian1PhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setContinuingGuardian1PhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleContinuingGuardian2PhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setContinuingGuardian2PhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setContinuingGuardian2PhotoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -300,7 +339,7 @@ export default function StudentRegistrationPage() {
     }
 
     // Guardian 1 validation
-    if (!isContinuingParent) {
+    if (!isContinuingGuardian1) {
       if (!studentData.guardian1?.full_name.trim()) {
         setErrorMessage('Primary guardian full name is required');
         return false;
@@ -320,7 +359,7 @@ export default function StudentRegistrationPage() {
     }
 
     // Guardian 2 validation (if visible)
-    if (showGuardian2) {
+    if (showGuardian2 && !isContinuingGuardian2) {
       if (!studentData.guardian2?.full_name.trim()) {
         setErrorMessage('Secondary guardian full name is required');
         return false;
@@ -369,8 +408,8 @@ export default function StudentRegistrationPage() {
   };
 
   // Get continuing parent infomation
-  const getContinuingParentInfo = async (guardianID: string) => {
-    setVerifyState("loading");
+  const getContinuingGuardian1Info = async (guardianID: string) => {
+    setVerifyState1("loading");
 
     try {
       const response = await fetch(
@@ -378,7 +417,7 @@ export default function StudentRegistrationPage() {
       );
 
       if (!response.ok) {
-        setVerifyState("error");
+        setVerifyState1("error");
         return;
       }
 
@@ -390,29 +429,96 @@ export default function StudentRegistrationPage() {
         guardian1: {
           ...prev.guardian1,
           full_name: guardian.full_name ?? "",
-          contact: guardian.phone ?? "",
+          contact: guardian.contact ?? "",
           nin: guardian.nin ?? "",
-          email: guardian.email ?? "",
+          email: guardian.email ?? "Not Provided",
           relationship: guardian.relationship ?? "",
         },
       }));
 
-      setVerifyState("success");
+      setContinuingGuardian1PhotoPreview(guardian?.photo)
+      setContinuingGuardian1PhotoLink(guardian?.photo)
+
+      setVerifyState1("success");
     } catch (error) {
       console.error(error);
-      setVerifyState("error");
+      setVerifyState1("error");
     }
   };
 
+  // Get continuing parent 2 infomation
+  // TODO: Copy Guardian 1 funtionality to Guardian2
+  const getContinuingGuardian2Info = async (guardianID: string) => {
+    setVerifyState2("loading");
+
+    try {
+      const response = await fetch(
+        `https://mjs-backend-server.onrender.com/guardians/view/${guardianID}`
+      );
+
+      if (!response.ok) {
+        setVerifyState2("error");
+        return;
+      }
+
+      const result = await response.json();
+      const guardian = result.data;
+
+      setStudentData(prev => ({
+        ...prev,
+        guardian2: {
+          ...prev.guardian2,
+          full_name: guardian.full_name ?? "",
+          contact: guardian.contact ?? "",
+          nin: guardian.nin ?? "",
+          email: guardian.email ?? "Not Provided",
+          relationship: guardian.relationship ?? "",
+        },
+      }));
+
+      setContinuingGuardian2PhotoPreview(guardian?.photo)
+      setContinuingGuardian2PhotoLink(guardian?.photo)
+
+      setVerifyState2("success");
+    } catch (error) {
+      console.error(error);
+      setVerifyState2("error");
+    }
+  };
+
+  
+  
+
+  // Update guardian photo if was in existance before
+  const patchGuardianPhoto = async (guardianId: string, photoUrl: string) => {
+    try {
+      const response = await fetch(
+        `https://mjs-backend-server.onrender.com/guardians/update/${guardianId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ photo: photoUrl }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to update guardian photo");
+      }
+  
+      return response.json();
+    } catch (error) {
+      throw new Error("Something went wrong!")
+    }
+  };
 
   // Handle form submission
   const handleSubmit = async () => {
     setErrorMessage('');
-    setSubmitStatus('idle');
+    setSubmitStatus1('idle');
 
     // Step 1: Validate form before doing anything
     if (!validateForm()) {
-      setSubmitStatus('error');
+      setSubmitStatus1('error');
       return;
     }
 
@@ -430,15 +536,20 @@ export default function StudentRegistrationPage() {
 
       if (guardian1PhotoFile) {
         guardian1PhotoUrl = await uploadToCloudinary(guardian1PhotoFile);
+      } else if (continuingGuardian1PhotoFile && isContinuingGuardian1) {
+        guardian1PhotoUrl = await uploadToCloudinary(continuingGuardian1PhotoFile);
+        console.log(`Continuing Guardian One Photo Uploaded`)
       }
 
       if (guardian2PhotoFile && showGuardian2) {
         guardian2PhotoUrl = await uploadToCloudinary(guardian2PhotoFile);
       }
 
+
+
       // Step 3: Create Guardian 1
       let guardian1_id = undefined;
-      if (!isContinuingParent) {
+      if (!isContinuingGuardian1) {
         if (guardian1_not_saved) {
 
           guardian1_id = generateGuardianID();
@@ -447,7 +558,6 @@ export default function StudentRegistrationPage() {
             full_name: studentData.guardian1!.full_name.trim(),
             contact: studentData.guardian1!.contact.trim(),
             nin: studentData.guardian1!.nin.trim(),
-            relationship: studentData.guardian1!.relationship,
             ...(studentData.guardian1!.email?.trim() && { email: studentData.guardian1!.email.trim() }),
             ...(guardian1PhotoUrl && { photo: guardian1PhotoUrl }),
           };
@@ -466,12 +576,16 @@ export default function StudentRegistrationPage() {
 
           setGuardian1_not_saved(false);
         }
+      } else {
+        if (guardian1PhotoUrl) {
+            patchGuardianPhoto(continuingGuardian1ID ,guardian1PhotoUrl)
+        }
       }
 
       // Step 4: Create Guardian 2 (if provided)
       let guardian2_id = undefined;
 
-      if (guardian2_not_saved) {
+      if(!isContinuingGuardian2){if (guardian2_not_saved) {
         if (showGuardian2 && studentData.guardian2?.full_name.trim()) {
           guardian2_id = generateGuardianID();
           const guardian2Payload = {
@@ -479,7 +593,6 @@ export default function StudentRegistrationPage() {
             full_name: studentData.guardian2.full_name.trim(),
             contact: studentData.guardian2.contact.trim(),
             nin: studentData.guardian2.nin.trim(),
-            relationship: studentData.guardian2.relationship,
             ...(studentData.guardian2.email?.trim() && { email: studentData.guardian2.email.trim() }),
             ...(guardian2PhotoUrl && { photo: guardian2PhotoUrl }),
           };
@@ -498,6 +611,10 @@ export default function StudentRegistrationPage() {
 
           setguardian2_not_saved(false);
         }
+      }}else{
+        if (guardian2PhotoUrl) {
+            patchGuardianPhoto(continuingGuardian2ID ,guardian2PhotoUrl)
+        }
       }
 
       // Step 5: Create Student
@@ -515,14 +632,20 @@ export default function StudentRegistrationPage() {
         gender: studentData.gender,
         date_of_birth: studentData.date_of_birth,
         section: studentData.section,
-        guardian1_id: guardian1_id || continuingParentID,
-        ...(guardian2_id && { guardian2_id: guardian2_id }),
-        ...(studentData.religion && { religion: studentData.religion }),
-        ...(studentData.house && { house: studentData.house }),
-        ...(studentData.club?.trim() && { club: studentData.club.trim() }),
-        ...(studentPhotoUrl && { photo: studentPhotoUrl }),
-        ...(studentData.LIN?.trim() && { LIN: studentData.LIN.trim() }),
-        ...(studentData.payment_code?.trim() && { payment_code: studentData.payment_code.trim() }),
+        guardian1: {
+          guardian_id: guardian1_id || continuingGuardian1ID,
+          relationship: studentData.guardian1?.relationship
+        },
+        guardian2: {
+          guardian_id: guardian2_id,
+          relationship: studentData.guardian2?.relationship
+        },
+        ...(studentData?.religion && {religion: studentData.religion}),
+        house: studentData?.house ?? null,
+        ...(studentData?.club && {club: studentData?.club.trim()}),
+        photo: studentPhotoUrl ?? null,
+        ...(studentData?.LIN && {LIN: studentData?.LIN.trim()}),
+        ...(studentData?.payment_code && {payment_code: studentData?.payment_code.trim()}),
       };
 
       // Add residence if any field is filled
@@ -547,7 +670,7 @@ export default function StudentRegistrationPage() {
       const studentResponseData = await studentResponse.json();
       console.log("✅ Student successfully registered:", studentResponseData);
 
-      setSubmitStatus('success');
+      setSubmitStatus1('success');
 
       setTimeout(() => {
         handleReset();
@@ -556,7 +679,7 @@ export default function StudentRegistrationPage() {
     } catch (error) {
       console.error("❌ Error registering student:", error);
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while submitting');
-      setSubmitStatus('error');
+      setSubmitStatus1('error');
     } finally {
       setIsLoading(false);
     }
@@ -607,10 +730,14 @@ export default function StudentRegistrationPage() {
     setGuardian2PhotoFile(null);
     setGuardian2PhotoPreview('');
     setShowGuardian2(false);
-    setSubmitStatus('idle');
+    setSubmitStatus1('idle');
     setErrorMessage('');
-    setContinuingParentID('');
-    setIsContinuingParent(false);
+    setContinuingGuardian1ID('');
+    setContinuingGuardian2ID('');
+    setIsContinuingGuardian1(false);
+    setContinuingGuardian1PhotoPreview('')
+    setVerifyState1('idle');
+    setVerifyState2('idle');
   };
 
   const currentClassOptions = studentData.section ? CLASS_OPTIONS_MAP[studentData.section] : [];
@@ -620,7 +747,7 @@ export default function StudentRegistrationPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Success/Error Alerts */}
-        {submitStatus === 'success' && (
+        {submitStatus1 === 'success' && (
           <div className="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
             <div>
@@ -630,7 +757,7 @@ export default function StudentRegistrationPage() {
           </div>
         )}
 
-        {submitStatus === 'error' && (
+        {submitStatus1 === 'error' && (
           <div className="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
             <div>
@@ -642,14 +769,6 @@ export default function StudentRegistrationPage() {
 
         {/* Form Card */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <UserPlus className="w-6 h-6 text-red-700 dark:text-red-400" />
-              Student Registration
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">Complete all required fields to register a new student</p>
-          </div>
 
           {/* Personal Information Section */}
           <div className="p-8 border-b border-gray-200 dark:border-gray-700">
@@ -989,16 +1108,16 @@ export default function StudentRegistrationPage() {
                 {/* Tabs */}
                 <div className='flex gap-4 mb-8'>
                   <span
-                    onClick={() => setIsContinuingParent(false)}
-                    className={clsx('cursor-pointer border-1 border-slate-700 py-1 px-2 text-sm rounded-md', !isContinuingParent && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>New Parent</span>
+                    onClick={() => setIsContinuingGuardian1(false)}
+                    className={clsx('cursor-pointer border-1 border-slate-700 py-1 px-2 text-sm rounded-md', !isContinuingGuardian1 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>New Guardian</span>
                   <span
-                    onClick={() => setIsContinuingParent(true)}
-                    className={clsx('cursor-pointer border-1 border-slate-500  py-1 px-2 text-sm rounded-md', isContinuingParent && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>Continuing Parent</span>
+                    onClick={() => setIsContinuingGuardian1(true)}
+                    className={clsx('cursor-pointer border-1 border-slate-500  py-1 px-2 text-sm rounded-md', isContinuingGuardian1 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>Continuing Parent</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                   {/* Check If Guardian is continuing or new  */}
-                  {!isContinuingParent ? (
+                  {!isContinuingGuardian1 ? (
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1074,48 +1193,48 @@ export default function StudentRegistrationPage() {
                       <p className='text-sm mb-4'>* For continuing parents please provide the GuardianID</p>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Guardian ID: <span className="text-red-500">* {continuingParentID}</span>
+                          Guardian ID: <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
-                          value={continuingParentID}
-                          onChange={(e) => setContinuingParentID(e.target.value)}
+                          value={continuingGuardian1ID}
+                          onChange={(e) => {setContinuingGuardian1ID(e.target.value), setVerifyState1('idle')}}
                           className="w-72 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                           placeholder="Gxxxx--xxxx-xxxx-xxx"
                         />
                       </div>
                       <button
-                        disabled={verifyState === "loading" || verifyState === "success"}
-                        onClick={() => getContinuingParentInfo(continuingParentID)}
+                        disabled={verifyState1 === "loading"}
+                        onClick={() => getContinuingGuardian1Info(continuingGuardian1ID)}
                         className={`
                           py-2 px-4 rounded-md my-4 text-sm text-white flex items-center justify-center gap-2
                           transition-all duration-200
-                          ${verifyState === "idle" && "bg-green-800 hover:bg-green-800"
+                          ${verifyState1 === "idle" && "bg-green-800 hover:bg-green-800"
                           }
-                          ${verifyState === "loading" && "bg-green-400 cursor-not-allowed"
+                          ${verifyState1 === "loading" && "bg-green-400 cursor-not-allowed"
                           }
-                          ${verifyState === "success" && "bg-green-600"
+                          ${verifyState1 === "success" && "bg-green-600"
                           }
-                          ${verifyState === "error" && "bg-red-600"
+                          ${verifyState1 === "error" && "bg-red-600"
                           }
                         `}
                       >
-                        {verifyState === "loading" && (
+                        {verifyState1 === "loading" && (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         )}
-                        {verifyState === "success" && <Verified />}
-                        {verifyState === "error" && <OctagonX />}
+                        {verifyState1 === "success" && <Verified />}
+                        {verifyState1 === "error" && <OctagonX />}
 
                         <span>
-                          {verifyState === "idle" && "Verify Guardian Data"}
-                          {verifyState === "loading" && "Verifying..."}
-                          {verifyState === "success" && "Guardian Verified"}
-                          {verifyState === "error" && "Invalid Guardian"}
+                          {verifyState1 === "idle" && "Verify Guardian Data"}
+                          {verifyState1 === "loading" && "Verifying..."}
+                          {verifyState1 === "success" && "Verified"}
+                          {verifyState1 === "error" && "Invalid Guardian"}
                         </span>
                       </button>
 
                       {/* if verfied show data */}
-                      {verifyState === "success" && (<div className="space-y-4">
+                      {verifyState1 === "success" && (<div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Full Name <span className="text-red-500">*</span>
@@ -1191,7 +1310,7 @@ export default function StudentRegistrationPage() {
 
 
                   {/* Guardian 1 Photo Upload OR Show collected guardian photo */}
-                  {!isContinuingParent ? (
+                  {!isContinuingGuardian1 ? (
                     <div className="flex flex-col items-center justify-center">
                       <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
                         {guardian1PhotoPreview ? (
@@ -1234,17 +1353,17 @@ export default function StudentRegistrationPage() {
                   ) : (
                     <div className={clsx(
                       "flex flex-col items-center justify-center",
-                      verifyState !== "success" && "hidden"
+                      verifyState1 !== "success" && "hidden"
                     )}>
                       <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
-                        {guardian1PhotoPreview ? (
+                        {contuinuingGuardian1PhotoPreview ? (
                           <>
-                            <img src={guardian1PhotoPreview} alt="Guardian 1" className="w-full h-full object-cover" />
+                            <img src={contuinuingGuardian1PhotoPreview || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
                             <button
                               type="button"
                               onClick={() => {
-                                setGuardian1PhotoFile(null);
-                                setGuardian1PhotoPreview('');
+                                setContinuingGuardian1PhotoFile(null);
+                                setContinuingGuardian1PhotoPreview('');
                               }}
                               className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
                             >
@@ -1253,26 +1372,48 @@ export default function StudentRegistrationPage() {
                           </>
                         ) : (
                           <div className="text-center">
-                            <Camera className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Guardian Photo</p>
+                            <img src={contuinuingGuardian1PhotoLink || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
                           </div>
                         )}
                       </div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleGuardian1PhotoChange}
-                        className="hidden"
-                        id="guardian1-photo-upload"
-                      />
-                      <label
-                        htmlFor="guardian1-photo-upload"
-                        className="mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
-                      >
-                        <Upload className="w-3 h-3" />
-                        Upload Photo
-                      </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Optional</p>
+                      {!contuinuingGuardian1PhotoLink ? (
+                        <div className='flex flex-col justify-center items-center'>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleContinuingGuardian1PhotoChange}
+                            className="hidden"
+                            id="guardian1-photo-upload"
+                          />
+                          <label
+                            htmlFor="guardian1-photo-upload"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                          >
+                            <Camera className="w-3 h-3" />
+                            Upload New Photo
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This action updates the Guardian's photo in the entire system</p>
+                        </div>
+                      ) : (
+                        <div className='flex flex-col justify-center items-center'>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleContinuingGuardian1PhotoChange}
+                            className="hidden"
+                            id="guardian1-photo-upload"
+                            disabled
+                          />
+                          <label
+                            htmlFor="guardian1-photo-upload"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-gray-700 text-white rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
+                          >
+                            <Verified className="w-3 h-3" />
+                            Verified Guardian
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This photo can only be changed on student or guardian update</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1306,6 +1447,7 @@ export default function StudentRegistrationPage() {
                   type="button"
                   onClick={() => {
                     setShowGuardian2(false);
+                    setIsContinuingGuardian2(false)
                     setStudentData(prev => ({
                       ...prev,
                       guardian2: {
@@ -1325,121 +1467,319 @@ export default function StudentRegistrationPage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="guardian2.full_name"
-                      value={studentData.guardian2?.full_name}
-                      onChange={handleTextChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      placeholder="John Smith"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Contact <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="guardian2.contact"
-                      value={studentData.guardian2?.contact}
-                      onChange={handleTextChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      placeholder="+256700000000"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      NIN <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="guardian2.nin"
-                      value={studentData.guardian2?.nin}
-                      onChange={handleTextChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      placeholder="CM00000000000AA"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="guardian2.email"
-                      value={studentData.guardian2?.email}
-                      onChange={handleTextChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      placeholder="john@example.com (Optional)"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Relationship <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="guardian2.relationship"
-                      value={studentData.guardian2?.relationship}
-                      onChange={handleSelectChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <option value="">-- Select Relationship --</option>
-                      {RELATIONSHIP_OPTIONS.map(rel => (
-                        <option key={rel} value={rel}>{rel}</option>
-                      ))}
-                    </select>
-                  </div>
+              {/* Guardian 2 Logic */}
+              <div>
+                {/* Tabs */}
+                <div className='flex gap-4 mb-8'>
+                  <span
+                    onClick={() => setIsContinuingGuardian2(false)}
+                    className={clsx('cursor-pointer border-1 border-slate-700 py-1 px-2 text-sm rounded-md', !isContinuingGuardian2 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>New Guardian</span>
+                  <span
+                    onClick={() => setIsContinuingGuardian2(true)}
+                    className={clsx('cursor-pointer border-1 border-slate-500  py-1 px-2 text-sm rounded-md', isContinuingGuardian2 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>Continuing Parent</span>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                {/* Guardian 2 Photo Upload */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
-                    {guardian2PhotoPreview ? (
-                      <>
-                        <img src={guardian2PhotoPreview} alt="Guardian 2" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setGuardian2PhotoFile(null);
-                            setGuardian2PhotoPreview('');
-                          }}
-                          className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </>
-                    ) : (
-                      <div className="text-center">
-                        <Camera className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Guardian Photo</p>
+                  {/* Check If Guardian is continuing or new  */}
+                  {!isContinuingGuardian2 ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="guardian2.full_name"
+                          value={studentData.guardian2?.full_name}
+                          onChange={handleTextChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          placeholder="Jane Doe"
+                        />
                       </div>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleGuardian2PhotoChange}
-                    className="hidden"
-                    id="guardian2-photo-upload"
-                  />
-                  <label
-                    htmlFor="guardian2-photo-upload"
-                    className="mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
-                  >
-                    <Upload className="w-3 h-3" />
-                    Upload Photo
-                  </label>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Optional</p>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Contact <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="tel"
+                          name="guardian2.contact"
+                          value={studentData.guardian2?.contact}
+                          onChange={handleTextChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          placeholder="+256700000000"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          NIN <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="guardian2.nin"
+                          value={studentData.guardian2?.nin}
+                          onChange={handleTextChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          placeholder="CM00000000000AA"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          name="guardian2.email"
+                          value={studentData.guardian2?.email}
+                          onChange={handleTextChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          placeholder="jane@example.com (Optional)"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Relationship <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="guardian2.relationship"
+                          value={studentData.guardian2?.relationship}
+                          onChange={handleSelectChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
+                          <option value="">-- Select Relationship --</option>
+                          {RELATIONSHIP_OPTIONS.map(rel => (
+                            <option key={rel} value={rel}>{rel}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className='text-sm mb-4'>* For continuing parents please provide the GuardianID</p>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Guardian ID: <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={continuingGuardian2ID}
+                          onChange={(e) => {setContinuingGuardian2ID(e.target.value), setVerifyState2('idle')}}
+                          className="w-72 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          placeholder="Gxxxx--xxxx-xxxx-xxx"
+                        />
+                      </div>
+                      <button
+                        disabled={verifyState2 === "loading"}
+                        onClick={() => getContinuingGuardian2Info(continuingGuardian2ID)}
+                        className={`
+                          py-2 px-4 rounded-md my-4 text-sm text-white flex items-center justify-center gap-2
+                          transition-all duration-200
+                          ${verifyState2 === "idle" && "bg-green-800 hover:bg-green-800"
+                          }
+                          ${verifyState2 === "loading" && "bg-green-400 cursor-not-allowed"
+                          }
+                          ${verifyState2 === "success" && "bg-green-600"
+                          }
+                          ${verifyState2 === "error" && "bg-red-600"
+                          }
+                        `}
+                      >
+                        {verifyState2 === "loading" && (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        )}
+                        {verifyState2 === "success" && <Verified />}
+                        {verifyState2 === "error" && <OctagonX />}
+
+                        <span>
+                          {verifyState2 === "idle" && "Verify Guardian Data"}
+                          {verifyState2 === "loading" && "Verifying..."}
+                          {verifyState2 === "success" && "Verified"}
+                          {verifyState2 === "error" && "Invalid Guardian"}
+                        </span>
+                      </button>
+
+                      {/* if verfied show data */}
+                      {verifyState2 === "success" && (<div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Full Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="guardian2.full_name"
+                            value={studentData.guardian2?.full_name}
+                            disabled
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            placeholder="Jane Doe"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Contact <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            name="guardian2.contact"
+                            value={studentData.guardian2?.contact}
+                            disabled
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            placeholder="+256700000000"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            NIN <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="guardian2.nin"
+                            value={studentData.guardian2?.nin}
+                            disabled
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            placeholder="CM00000000000AA"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            name="guardian2.email"
+                            value={studentData.guardian2?.email}
+                            disabled
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            placeholder="jane@example.com (Optional)"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Relationship (Change this field if needed) <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            name="guardian2.relationship"
+                            value={studentData.guardian2?.relationship}
+                            onChange={handleSelectChange}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          >
+                            <option value="">-- Select Relationship --</option>
+                            {RELATIONSHIP_OPTIONS.map(rel => (
+                              <option key={rel} value={rel}>{rel}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      )}
+                    </div>
+                  )}
+
+
+                  {/* Guardian 2 Photo Upload OR Show collected guardian photo */}
+                  {!isContinuingGuardian2 ? (
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                        {guardian2PhotoPreview ? (
+                          <>
+                            <img src={guardian2PhotoPreview} alt="Guardian 2" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setGuardian2PhotoFile(null);
+                                setGuardian2PhotoPreview('');
+                              }}
+                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <div className="text-center">
+                            <Camera className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Guardian Photo</p>
+                          </div>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleGuardian2PhotoChange}
+                        className="hidden"
+                        id="guardian2-photo-upload"
+                      />
+                      <label
+                        htmlFor="guardian2-photo-upload"
+                        className="mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                      >
+                        <Upload className="w-3 h-3" />
+                        Upload Photo
+                      </label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Optional</p>
+                    </div>
+                  ) : (
+                    <div className={clsx(
+                      "flex flex-col items-center justify-center",
+                      verifyState2 !== "success" && "hidden"
+                    )}>
+                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                        {contuinuingGuardian2PhotoPreview ? (
+                          <>
+                            <img src={contuinuingGuardian2PhotoPreview || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setContinuingGuardian2PhotoFile(null);
+                                setContinuingGuardian2PhotoPreview('');
+                              }}
+                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <div className="text-center">
+                            <img src={contuinuingGuardian2PhotoLink || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                      {!contuinuingGuardian2PhotoLink ? (
+                        <div className='flex flex-col justify-center items-center'>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleContinuingGuardian2PhotoChange}
+                            className="hidden"
+                            id="guardian2-photo-upload"
+                          />
+                          <label
+                            htmlFor="guardian2-photo-upload"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                          >
+                            <Camera className="w-3 h-3" />
+                            Upload New Photo
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This action updates the Guardian's photo in the entire system {studentData.guardian2?.contact}</p>
+                        </div>
+                      ) : (
+                        <div className='flex flex-col justify-center items-center'>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleContinuingGuardian2PhotoChange}
+                            className="hidden"
+                            id="guardian2-photo-upload"
+                            disabled
+                          />
+                          <label
+                            htmlFor="guardian2-photo-upload"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-gray-700 text-white rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
+                          >
+                            <Verified className="w-3 h-3" />
+                            Verified Guardian
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This photo can only be changed on student or guardian update</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
