@@ -187,16 +187,16 @@ const AdmissionSystem = () => {
       case 'try':
       case 'ongoing': return { text: 'Ongoing', color: 'bg-yellow-100 text-yellow-800' };
       case 'repeat':
-      case 'cancelled': return { text: 'Cancelled', color: 'bg-red-100 text-red-800' };
-      default: return { text: 'Pending', color: 'bg-gray-100 text-gray-800' };
+      case 'cancelled': return { text: 'Cancelled', color: 'bg-red-100 text-cta' };
+      default: return { text: 'Pending', color: 'bg-primary dark:bg-secondary text-secondary dark:text-primary' };
     }
   };
 
   const getAdmissionStatusLabel = (status) => {
     switch (status) {
-      case 'ready': return { text: 'Ready for Admission', color: 'bg-gray-100 text-gray-800' };
-      case 'Completed': return { text: 'Fully Registered', color: 'bg-purple-100 text-purple-800' };
-      default: return { text: 'Pending Interview', color: 'bg-gray-100 text-gray-800' };
+      case 'ready': return { text: 'Ready for Admission', color: 'bg-primary dark:bg-secondary text-secondary dark:text-primary' };
+      case 'Completed': return { text: 'Fully Registered', color: 'bg-primary text-secondary dark:text-primary' };
+      default: return { text: 'Pending Interview', color: 'bg-primary dark:bg-secondary text-secondary dark:text-primary' };
     }
   };
 
@@ -224,7 +224,7 @@ const AdmissionSystem = () => {
   return (
     <div className='min-h-screen'>
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow mb-2 text-xs">
+      <div className="bg-primary dark:bg-secondary rounded-lg shadow mb-2 text-xs text-secondary dark:text-primary">
         <div className="flex border-b">
           <Tab id="interview" title={"Interviews"} setActiveTab={setActiveTab} activeTab={activeTab} Icon={ClipboardList} candidates={intervieweeList} />
           <Tab id="ready" title={"Ready for Admission"} setActiveTab={setActiveTab} activeTab={activeTab} Icon={CheckCircle} candidates={candidates} />
@@ -261,26 +261,26 @@ const CandidateRow = ({
 
   return (
     <>
-      <tr className="hover:bg-gray-50 cursor-pointer" onClick={() => setShowDetails(!showDetails)}>
+      <tr className="hover:bg-primary dark:bg-secondary cursor-pointer" onClick={() => setShowDetails(!showDetails)}>
         <td className="px-6 py-4 whitespace-nowrap">
           <div className="flex items-center">
-            <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
-              <span className="font-medium text-gray-800">{fullName.charAt(0)}</span>
+            <div className="flex-shrink-0 h-10 w-10 bg-primary dark:bg-secondary rounded-full flex items-center justify-center">
+              <span className="font-medium text-secondary dark:text-primary">{fullName.charAt(0)}</span>
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">{fullName}</div>
-              <div className="text-sm text-gray-500">{candidate.interviewDate}</div>
+              <div className="text-sm font-medium text-secondary dark:text-primary">{fullName}</div>
+              <div className="text-sm text-primary">{candidate.interviewDate}</div>
             </div>
           </div>
         </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
           {candidate.previousSchool}
         </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
           {candidate.interviewScore ? (
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${candidate.interviewScore >= 50 ? 'bg-green-100 text-green-800' :
               candidate.interviewScore >= 30 ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
+                'bg-red-100 text-cta'
               }`}>
               {candidate.interviewScore}%
             </span>
@@ -302,13 +302,13 @@ const CandidateRow = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(candidate); }}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-secondary  dark:text-primary hover:text-secondary dark:text-primary"
             >
               <Edit size={16} />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(candidate.id); }}
-              className="text-red-600 hover:text-red-900"
+              className="text-cta hover:text-red-900"
             >
               <Trash2 size={16} />
             </button>
@@ -318,29 +318,29 @@ const CandidateRow = ({
       </tr>
       {showDetails && (
         <tr>
-          <td colSpan="6" className="px-6 py-4 bg-gray-50">
+          <td colSpan="6" className="px-6 py-4 bg-primary dark:bg-secondary">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Background Information</h4>
-                <p className="text-sm text-gray-600">{candidate.background}</p>
+                <h4 className="text-sm font-medium text-secondary  dark:text-primary mb-2">Background Information</h4>
+                <p className="text-sm text-secondary dark:text-primary">{candidate.background}</p>
 
-                <h4 className="text-sm font-medium text-gray-700 mt-4 mb-2">Head Teacher Notes</h4>
-                <p className="text-sm text-gray-600">{candidate.headTeacherNotes}</p>
+                <h4 className="text-sm font-medium text-secondary  dark:text-primary mt-4 mb-2">Head Teacher Notes</h4>
+                <p className="text-sm text-secondary dark:text-primary">{candidate.headTeacherNotes}</p>
               </div>
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Interview Notes</h4>
-                <p className="text-sm text-gray-600">{candidate.interviewNotes}</p>
+                <h4 className="text-sm font-medium text-secondary  dark:text-primary mb-2">Interview Notes</h4>
+                <p className="text-sm text-secondary dark:text-primary">{candidate.interviewNotes}</p>
 
-                <h4 className="text-sm font-medium text-gray-700 mt-4 mb-2">Recommended Subjects</h4>
+                <h4 className="text-sm font-medium text-secondary  dark:text-primary mt-4 mb-2">Recommended Subjects</h4>
                 <div className="flex flex-wrap gap-2">
                   {candidate.subjects.map((subject, index) => (
-                    <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary dark:bg-secondary text-secondary dark:text-primary">
                       {subject}
                     </span>
                   ))}
                 </div>
 
-                <h4 className="text-sm font-medium text-gray-700 mt-4 mb-2">Interview Score</h4>
+                <h4 className="text-sm font-medium text-secondary  dark:text-primary mt-4 mb-2">Interview Score</h4>
                 <div className="flex items-center">
                   <input
                     type="number"
@@ -348,11 +348,11 @@ const CandidateRow = ({
                     onChange={(e) => setLocalScore(Number(e.target.value))}
                     min="0"
                     max="100"
-                    className="w-20 px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    className="w-20 px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                   />
                   <button
                     onClick={() => onUpdate(candidate.id, { interviewScore: localScore, status: 'Completed' })}
-                    className="ml-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                    className="ml-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-blue-600 hover:bg-blue-700"
                   >
                     Save Score
                   </button>
@@ -363,19 +363,19 @@ const CandidateRow = ({
                     <>
                       <button
                         onClick={() => onStatusChange(candidate.id, 'approved')}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-green-600 hover:bg-green-700"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => onStatusChange(candidate.id, 'try')}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-yellow-600 hover:bg-yellow-700"
                       >
                         Needs Try
                       </button>
                       <button
                         onClick={() => onStatusChange(candidate.id, 'repeat')}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-cta hover:bg-cta"
                       >
                         Repeat
                       </button>
@@ -385,7 +385,7 @@ const CandidateRow = ({
                   {activeTab === 'interview' && candidate.status !== 'Pending' && (
                     <button
                       onClick={() => onMoveToQueue(candidate.id)}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700"
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-secondary hover:bg-secondary"
                     >
                       Move to Admission Queue
                     </button>
@@ -394,7 +394,7 @@ const CandidateRow = ({
                   {activeTab === 'ready' && (
                     <button
                       onClick={() => onCompleteAdmission(candidate.id)}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700"
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-secondary hover:bg-secondary"
                     >
                       Complete Registration
                     </button>
@@ -411,125 +411,125 @@ const CandidateRow = ({
 
 const CandidateForm = ({ newCandidate, editingCandidate, handleInputChange, handleSubmit, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-red-400 bg-opacity-0 flex items-center justify-center p-4 z-40">
-      <div className="bg-white rounded-lg -mt-26 shadow-xl w-full max-w-2xl max-h-screen overflow-y-auto">
+    <div className="fixed inset-0 bg-cta bg-opacity-0 flex items-center justify-center p-4 z-40">
+      <div className="bg-primary dark:bg-secondary rounded-lg -mt-26 shadow-xl w-full max-w-2xl max-h-screen overflow-y-auto">
         <div className="flex justify-between items-center p-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-lg font-semibold text-secondary dark:text-primary">
             {editingCandidate ? 'Edit Candidate' : 'New Candidate'}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-primary dark:text-secondary hover:text-secondary dark:text-primary">
             <X size={20} />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block font-medium text-gray-700 mb-1 text-lg">First Name</label>
+              <label className="block font-medium text-secondary  dark:text-primary mb-1 text-lg">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 value={newCandidate.firstName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Last Name</label>
               <input
                 type="text"
                 name="lastName"
                 value={newCandidate.lastName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Other Names</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Other Names</label>
               <input
                 type="text"
                 name="otherNames"
                 value={newCandidate.otherNames}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Previous School</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Previous School</label>
               <input
                 type="text"
                 name="previousSchool"
                 value={newCandidate.previousSchool}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Level</label>
               <input
                 type="text"
                 name="level"
                 value={newCandidate.level}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Subject</label>
               <input
                 type="text"
                 name="subject"
                 value={newCandidate.subject}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Issued By</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Issued By</label>
               <input
                 type="text"
                 name="issuedBy"
                 value={newCandidate.issuedBy}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Background Information</label>
+            <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Background Information</label>
             <textarea
               name="background"
               value={newCandidate.background}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               required
             ></textarea>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Interview Date</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Interview Date</label>
               <input
                 type="date"
                 name="interviewDate"
                 value={newCandidate.interviewDate}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Interview Score</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Interview Score</label>
               <input
                 type="number"
                 name="interviewScore"
@@ -537,53 +537,53 @@ const CandidateForm = ({ newCandidate, editingCandidate, handleInputChange, hand
                 onChange={handleInputChange}
                 min="0"
                 max="100"
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Interview Notes</label>
+            <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Interview Notes</label>
             <textarea
               name="interviewNotes"
               value={newCandidate.interviewNotes}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
             ></textarea>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Head Teacher Notes</label>
+            <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Head Teacher Notes</label>
             <textarea
               name="headTeacherNotes"
               value={newCandidate.headTeacherNotes}
               onChange={handleInputChange}
               rows={2}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
             ></textarea>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Class Assignment</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Class Assignment</label>
               <input
                 type="text"
                 name="classAssignment"
                 value={newCandidate.classAssignment}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
                 placeholder="e.g., Grade 10A"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Status</label>
               <select
                 name="status"
                 value={newCandidate.status}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-midtone"
               >
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
@@ -600,13 +600,13 @@ const CandidateForm = ({ newCandidate, editingCandidate, handleInputChange, hand
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-primary-plus rounded-md text-secondary  dark:text-primary hover:bg-primary dark:bg-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 flex items-center"
+              className="px-4 py-2 bg-secondary text-primary dark:text-secondary rounded-md hover:bg-secondary flex items-center"
             >
               <Save size={18} className="mr-2" />
               {editingCandidate ? 'Update Candidate' : 'Create Candidate'}
@@ -629,11 +629,11 @@ const Tab = ({ id, title, setActiveTab, activeTab, Icon: Icon, candidates }) => 
   return (
     <button
       onClick={() => setActiveTab(id)}
-      className={`relative flex-row px-6 py-3 font-medium flex items-center ${activeTab === id ? 'text-gray-600 border-b-2 border-gray-600' : 'text-gray-500 hover:text-gray-700'}`}
+      className={`relative flex-row px-6 py-3 font-medium flex items-center ${activeTab === id ? 'text-secondary  dark:text-primary border-b-2 border-secondary' : 'text-primary dark:text-secondary hover:text-secondary dark:text-primary'}`}
     >
       <Icon size={18} className="mr-2" />
       <p>{title}</p>
-      <span className="ml-2 bg-grey-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="ml-2 bg-grey-200 text-secondary  dark:text-primary text-xs font-semibold px-2 py-1 rounded-full">
         {count}
       </span>
     </button>
@@ -754,14 +754,14 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
       return (
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4 text-[#374151]">Admission Process</h2>
-          <p className="mb-4 text-gray-600">Do you want to give an interview paper to the candidate?</p>
+          <p className="mb-4 text-secondary dark:text-primary">Do you want to give an interview paper to the candidate?</p>
           <div className="flex justify-end gap-4">
             <button
               onClick={() => {
                 setInterviewDecision(true);
                 setShowInterviewPrompt(false);
               }}
-              className="bg-[#b91c1c] text-white px-4 py-2 rounded hover:bg-[#dc2626]"
+              className="bg-[#b91c1c] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#dc2626]"
             >
               Yes
             </button>
@@ -770,7 +770,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 setInterviewDecision(false);
                 setShowInterviewPrompt(false);
               }}
-              className="bg-[#374151] text-white px-4 py-2 rounded hover:bg-[#4b5563]"
+              className="bg-[#374151] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#4b5563]"
             >
               No
             </button>
@@ -785,7 +785,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
         <form onSubmit={handleInterviewSubmit} className="p-6">
           <h2 className="text-lg font-semibold mb-4 text-[#374151]">Interview Paper Details</h2>
           <div className="mb-4">
-            <label className="block text-gray-700">Candidate's Full Name</label>
+            <label className="block text-secondary dark:text-primary">Candidate's Full Name</label>
             <input
               type="text"
               name="fullName"
@@ -796,7 +796,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Previous School</label>
+            <label className="block text-secondary dark:text-primary">Previous School</label>
             <input
               type="text"
               name="previousSchool"
@@ -807,7 +807,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Subject</label>
+            <label className="block text-secondary dark:text-primary">Subject</label>
             <select
               name="subject"
               value={interviewData.subject}
@@ -823,7 +823,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
             </select>
           </div>
           <div className="flex justify-end">
-            <button type="submit" className="bg-[#b91c1c] text-white px-4 py-2 rounded hover:bg-[#dc2626]">
+            <button type="submit" className="bg-[#b91c1c] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#dc2626]">
               Submit
             </button>
           </div>
@@ -837,9 +837,9 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
 
           {step === 1 && (
             <div>
-              <h3 className="text-md font-medium mb-2 text-gray-700">Student's Bio</h3>
+              <h3 className="text-md font-medium mb-2 text-secondary dark:text-primary">Student's Bio</h3>
               <div className="mb-4">
-                <label className="block text-gray-700">Full Name</label>
+                <label className="block text-secondary dark:text-primary">Full Name</label>
                 <input
                   type="text"
                   name="fullName"
@@ -850,7 +850,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Gender</label>
+                <label className="block text-secondary dark:text-primary">Gender</label>
                 <select
                   name="gender"
                   value={studentBio.gender}
@@ -864,7 +864,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Level</label>
+                <label className="block text-secondary dark:text-primary">Level</label>
                 <select
                   name="level"
                   value={studentBio.level}
@@ -886,7 +886,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
               </div>
               {/* Add more bio fields as needed */}
               <div className="flex justify-end">
-                <button type="button" onClick={nextStep} className="bg-[#b91c1c] text-white px-4 py-2 rounded hover:bg-[#dc2626]">
+                <button type="button" onClick={nextStep} className="bg-[#b91c1c] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#dc2626]">
                   Next
                 </button>
               </div>
@@ -895,9 +895,9 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
 
           {step === 2 && (
             <div>
-              <h3 className="text-md font-medium mb-2 text-gray-700">Parents/Guardian Details</h3>
+              <h3 className="text-md font-medium mb-2 text-secondary dark:text-primary">Parents/Guardian Details</h3>
               <div className="mb-4">
-                <label className="block text-gray-700">Parent/Guardian Name</label>
+                <label className="block text-secondary dark:text-primary">Parent/Guardian Name</label>
                 <input
                   type="text"
                   name="parentName"
@@ -908,7 +908,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Contact</label>
+                <label className="block text-secondary dark:text-primary">Contact</label>
                 <input
                   type="text"
                   name="contact"
@@ -920,10 +920,10 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
               </div>
               {/* Add more parent fields as needed */}
               <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="bg-[#374151] text-white px-4 py-2 rounded hover:bg-[#4b5563]">
+                <button type="button" onClick={prevStep} className="bg-[#374151] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#4b5563]">
                   Previous
                 </button>
-                <button type="button" onClick={nextStep} className="bg-[#b91c1c] text-white px-4 py-2 rounded hover:bg-[#dc2626]">
+                <button type="button" onClick={nextStep} className="bg-[#b91c1c] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#dc2626]">
                   Next
                 </button>
               </div>
@@ -932,9 +932,9 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
 
           {step === 3 && (
             <div>
-              <h3 className="text-md font-medium mb-2 text-gray-700">Passport Photos</h3>
+              <h3 className="text-md font-medium mb-2 text-secondary dark:text-primary">Passport Photos</h3>
               <div className="mb-4">
-                <label className="block text-gray-700">Child's Passport Photo</label>
+                <label className="block text-secondary dark:text-primary">Child's Passport Photo</label>
                 <input
                   type="file"
                   name="childPhoto"
@@ -945,7 +945,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Parent/Guardian's Passport Photo</label>
+                <label className="block text-secondary dark:text-primary">Parent/Guardian's Passport Photo</label>
                 <input
                   type="file"
                   name="parentPhoto"
@@ -956,10 +956,10 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
                 />
               </div>
               <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="bg-[#374151] text-white px-4 py-2 rounded hover:bg-[#4b5563]">
+                <button type="button" onClick={prevStep} className="bg-[#374151] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#4b5563]">
                   Previous
                 </button>
-                <button type="submit" className="bg-[#b91c1c] text-white px-4 py-2 rounded hover:bg-[#dc2626]">
+                <button type="submit" className="bg-[#b91c1c] text-primary dark:text-secondary px-4 py-2 rounded hover:bg-[#dc2626]">
                   Submit
                 </button>
               </div>
@@ -973,7 +973,7 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
   return (
     <div className="fixed inset-0 z-40 h-[80vh] top-20">
       {/* Background Overlay */}
-      <div className="absolute bg-black opacity-50 z-10 w-full h-full"></div>
+      <div className="absolute bg-secondary opacity-50 z-10 w-full h-full"></div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-full">
@@ -981,8 +981,8 @@ const AdmissionProcessForm = ({ onClose, onAdd }) => {
         </div>
       ) : (
         <>
-          <div className="bg-gray-50 inset-1 bottom-0 flex items-center justify-center p-4 h-fit w-full relative z-20">
-            <div className="bg-white rounded-lg opacity-100 shadow-xl w-full h-full max-w-2xl max-h-screen overflow-y-auto">
+          <div className="bg-primary dark:bg-secondary inset-1 bottom-0 flex items-center justify-center p-4 h-fit w-full relative z-20">
+            <div className="bg-primary dark:bg-secondary rounded-lg opacity-100 shadow-xl w-full h-full max-w-2xl max-h-screen overflow-y-auto">
               {renderContent()}
             </div>
           </div>

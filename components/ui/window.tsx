@@ -15,33 +15,33 @@ export default function Window({ title, children, onClose }: WindowProps) {
     <motion.div
       drag={!isMaximized}
       dragMomentum={false}
-      className={`fixed bg-white shadow-2xl rounded-lg border border-gray-300 overflow-hidden flex flex-col
+      className={`fixed bg-primary dark:bg-secondary shadow-2xl rounded-lg border border-primary-plus overflow-hidden flex flex-col
         ${isMaximized ? "top-0 left-0 w-screen h-screen z-[99999]" : "top-20 left-20 w-[800px] h-[600px] z-[9999]"}`}
     >
       {/* Window Header */}
       <div className={`flex justify-between items-center bg-grey-200 px-3 py-2 ${!isMaximized ? "cursor-move" : ""}`}>
-        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+        <h2 className="text-sm font-semibold text-secondary dark:text-primary">{title}</h2>
         <div className="flex gap-2 items-center">
           <Minus
             size={16}
-            className="text-gray-600 hover:text-gray-900 cursor-pointer"
+            className="text-secondary  dark:text-primary hover:text-secondary  dark:text-primary cursor-pointer"
             // Add minimize handling if needed
           />
           <Square
             size={16}
-            className="text-gray-600 hover:text-gray-900 cursor-pointer"
+            className="text-secondary  dark:text-primary hover:text-secondary  dark:text-primary cursor-pointer"
             onClick={() => setIsMaximized(!isMaximized)}
           />
           <X
             size={16}
-            className="text-gray-600 hover:text-red-600 cursor-pointer"
+            className="text-secondary  dark:text-primary hover:text-cta cursor-pointer"
             onClick={onClose}
           />
         </div>
       </div>
 
       {/* Window Content */}
-      <div className="flex-1 p-4 bg-gray-50 overflow-auto">{children}</div>
+      <div className="flex-1 p-4 bg-primary dark:bg-secondary overflow-auto">{children}</div>
     </motion.div>
   );
 }

@@ -104,19 +104,19 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
   }, [pathname]);
 
   const drawerContent = (
-    <div className="w-full p-4 h-full bg-gray-50">
+    <div className="w-full p-4 h-full bg-primary dark:bg-secondary">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <motion.div 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            <svg className="w-8 h-8 text-gray-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-secondary  dark:text-primary mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
             </svg>
           </motion.div>
           <motion.h2 
-            className={`text-xl font-bold text-gray-800 ${state.isMinimised && !isMobile ? 'hidden' : 'block'}`}
+            className={`text-xl font-bold text-secondary  dark:text-primary ${state.isMinimised && !isMobile ? 'hidden' : 'block'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -127,7 +127,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
         {!isMobile && (
           <motion.button
             onClick={toggleMenu}
-            className="text-gray-600 hover:text-gray-800"
+            className="text-secondary  dark:text-primary hover:text-secondary dark:text-primary"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
@@ -297,7 +297,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
       {isMobile && (
         <button
           onClick={toggleMenu}
-          className="fixed z-50 top-4 left-4 text-gray-600 bg-gray-50 p-2 rounded-lg hover:text-gray-800"
+          className="fixed z-50 top-4 left-4 text-secondary  dark:text-primary bg-primary dark:bg-secondary p-2 rounded-lg hover:text-secondary dark:text-primary"
         >
           <Menu size={24} />
         </button>
@@ -306,7 +306,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
       {/* Sidebar */}
       <div
         className={clsx(
-          'fixed z-50 left-0 h-screen bg-gray-50 shadow-lg transition-all duration-300 ease-in-out',
+          'fixed z-50 left-0 h-screen bg-primary dark:bg-secondary shadow-lg transition-all duration-300 ease-in-out',
           {
             'w-64': !isMobile && !state.isMinimised,
             'w-16': !isMobile && state.isMinimised,
@@ -320,7 +320,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
         {isMobile && mobileOpen && (
           <button
             onClick={toggleMenu}
-            className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+            className="absolute top-4 right-4 text-secondary  dark:text-primary hover:text-secondary dark:text-primary"
           >
             <X size={24} />
           </button>
@@ -329,7 +329,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
           <motion.button
             onClick={toggleMenu}
             className={clsx(
-              'absolute -right-6 top-4 text-gray-600 bg-gray-50 p-2 pl-3 rounded-lg hover:text-gray-800',
+              'absolute -right-6 top-4 text-secondary  dark:text-primary bg-primary dark:bg-secondary p-2 pl-3 rounded-lg hover:text-secondary dark:text-primary',
               { hidden: !state.isMinimised }
             )}
             whileHover={{ scale: 1.1 }}
@@ -391,10 +391,10 @@ const MenuLink = ({
         href={href || '#'}
         onClick={handleClick}
         className={clsx(
-          'relative flex items-center w-full p-2 gap-2 text-gray-600 hover:bg-gray-300 rounded-lg transition-colors duration-200',
+          'relative flex items-center w-full p-2 gap-2 text-secondary  dark:text-primary hover:bg-primary-hover rounded-lg transition-colors duration-200',
           { 
-            'bg-red-700 hover:bg-red-700 text-white rounded-lg': isActive && !isDown,
-            'bg-rose-600 hover:bg-rose-600 text-white': isActive && isDown,
+            'bg-cta hover:bg-cta text-primary dark:text-secondary rounded-lg': isActive && !isDown,
+            'bg-rose-600 hover:bg-rose-600 text-primary': isActive && isDown,
           }
         )}
       >
@@ -406,10 +406,10 @@ const MenuLink = ({
         {issues && (
           <motion.span
             className={clsx(
-              'absolute right-4 bg-gray-600 rounded-full w-5 h-5 flex items-center justify-center text-[10px]',
+              'absolute right-4 bg-secondary rounded-full w-5 h-5 flex items-center justify-center text-[10px]',
               {
-                'bg-white text-black': isActive,
-                'bg-gray-600 text-white': !isActive,
+                'bg-primary dark:bg-secondary text-secondary dark:text-primary': isActive,
+                'bg-secondary text-primary': !isActive,
               }
             )}
             initial={{ scale: 0 }}
@@ -455,10 +455,10 @@ const MenuDropdown = ({
       <motion.button 
         onClick={handleClick}
         className={clsx(
-          'flex items-center w-full p-2 mb-1 text-gray-600 hover:bg-gray-300 rounded-lg gap-2 transition-colors duration-200',
+          'flex items-center w-full p-2 mb-1 text-secondary  dark:text-primary hover:bg-cta rounded-lg gap-2 transition-colors duration-200',
           { 
-            'bg-gray-300 hover:bg-gray-300 text-gray-700': isActive && isDown,
-            'bg-gray-300 hover:bg-gray-300 text-gray-700': isDown 
+            'bg-cta hover:bg-cta text-secondary dark:text-primary': isActive && isDown,
+            'bg-primary-hover hover:bg-ba text-secondary dark:text-primary': isDown 
           }
         )}
         whileHover={{ scale: 1.02 }}
@@ -484,7 +484,7 @@ const MenuDropdown = ({
         {isDown && isDropdownOpen && (
           <motion.div
             className={clsx(
-              'bg-gray-50 rounded-lg overflow-hidden',
+              'bg-primary dark:bg-secondary rounded-lg overflow-hidden',
               { 'shadow-md absolute -right-54 top-1 p-2 w-48': isMinimised }
             )}
             initial={{ opacity: 0, height: 0 }}

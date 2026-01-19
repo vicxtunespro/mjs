@@ -118,26 +118,26 @@ const StudentSummaries = ({ data }) => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-gray-100">
+    <div className="container mx-auto p-4 bg-background-light dark:bg-background-dark">
       <div>
-        <h1 className="text-2xl font-bold mt-4 text-gray-800">Student Summaries</h1>
-        <p className="text-sm font-light mb-8 text-gray-600">Visualize student data by gender, section, and level.</p>
+        <h1 className="text-2xl font-bold mt-4 text-secondary dark:text-primary">Student Summaries</h1>
+        <p className="text-sm font-light mb-8 text-secondary dark:text-primary">Visualize student data by gender, section, and level.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-gray-500">Gender Distribution</h2>
+        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+          <h2 className="text-md font-medium mb-2 text-primary">Gender Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.gender} options={donutOptions} />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-gray-500">Section Distribution</h2>
+        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+          <h2 className="text-md font-medium mb-2 text-primary">Section Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.section} options={donutOptions} />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-gray-500">Level Distribution</h2>
+        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+          <h2 className="text-md font-medium mb-2 text-primary">Level Distribution</h2>
           <div className="h-64">
             <Bar data={chartData.level} options={barOptions} />
           </div>

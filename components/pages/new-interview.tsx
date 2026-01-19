@@ -215,7 +215,7 @@ export default function InterviewRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary to-primary">
       
 
       {/* Main Content */}
@@ -232,55 +232,55 @@ export default function InterviewRegistrationPage() {
         )}
 
         {submitStatus === 'error' && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <div className="mb-6 bg-cta-low border border-cta-low rounded-lg p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-cta flex-shrink-0" />
             <div>
-              <p className="text-red-800 font-medium">Failed to register interview</p>
-              <p className="text-red-700 text-sm">{errorMessage}</p>
+              <p className="text-cta font-medium">Failed to register interview</p>
+              <p className="text-cta text-sm">{errorMessage}</p>
             </div>
           </div>
         )}
 
         {/* Form Card */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div className="bg-primary dark:bg-secondary rounded-xl shadow-lg border border-primary">
           {/* Personal Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <UserPlus className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
+              <UserPlus className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Personal Information</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  First Name <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
                   name="firstName"
                   value={interviewData.firstName}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                   placeholder="John"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Last Name <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
                   name="lastName"
                   value={interviewData.lastName}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                   placeholder="Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Other Names
                 </label>
                 <input
@@ -288,7 +288,7 @@ export default function InterviewRegistrationPage() {
                   name="otherNames"
                   value={interviewData.otherNames}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                   placeholder="Optional"
                 />
               </div>
@@ -296,44 +296,44 @@ export default function InterviewRegistrationPage() {
           </div>
 
           {/* School Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <School className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">School Background</h2>
+              <School className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">School Background</h2>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Previous School <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                Previous School <span className="text-cta">*</span>
               </label>
               <input
                 type="text"
                 name="previousSchool"
                 value={interviewData.previousSchool}
                 onChange={handleTextChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                 placeholder="Enter previous school name"
               />
             </div>
           </div>
 
           {/* Academic Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <BookOpen className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Academic Details</h2>
+              <BookOpen className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Academic Details</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Education Level <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Education Level <span className="text-cta">*</span>
                 </label>
                 <select
                   name="section"
                   value={interviewData.section}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
                 >
                   <option value="">-- Select Level --</option>
                   <option value="Pre-Primary">Pre-Primary</option>
@@ -342,14 +342,14 @@ export default function InterviewRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Class <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Class <span className="text-cta">*</span>
                 </label>
                 <select
                   name="class"
                   value={interviewData.class}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-primary"
                   disabled={!interviewData.section}
                 >
                   <option value="">-- Select Class --</option>
@@ -362,14 +362,14 @@ export default function InterviewRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Subject <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Subject <span className="text-cta">*</span>
                 </label>
                 <select
                   name="subject"
                   value={interviewData.subject}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-primary"
                   disabled={!interviewData.section}
                 >
                   <option value="">-- Select Subject --</option>
@@ -386,13 +386,13 @@ export default function InterviewRegistrationPage() {
           {/* Interview Details Section */}
           <div className="p-8">
             <div className="flex items-center gap-2 mb-6">
-              <CheckCircle2 className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Interview Details</h2>
+              <CheckCircle2 className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Interview Details</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Score (Optional)
                 </label>
                 <input
@@ -409,13 +409,13 @@ export default function InterviewRegistrationPage() {
                       score: value === '' ? undefined : Number(value)
                     }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                   placeholder="0-100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Status
                 </label>
                 <select
@@ -423,7 +423,7 @@ export default function InterviewRegistrationPage() {
                   disabled
                   value={interviewData.status}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Passed">Passed</option>
@@ -431,14 +431,14 @@ export default function InterviewRegistrationPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Issued by
                 </label>
                 <select
                   name="status"
                   value={interviewData.status}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
                 >
                   <option value="Head Teacher">Head Teacher</option>
                   <option value="Deputy Head Teacher">Deputy Head Teacher</option>
@@ -447,22 +447,22 @@ export default function InterviewRegistrationPage() {
               </div>
 
               {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Issued By <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Issued By <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
                   name="issuedBy"
                   value={interviewData.issuedBy}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
                   placeholder="Head Teacher"
                 />
               </div> */}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                 Feedback (Optional)
               </label>
               <textarea
@@ -470,18 +470,18 @@ export default function InterviewRegistrationPage() {
                 value={interviewData.feedback}
                 onChange={handleTextChange}
                 rows={3}
-                className="w-full text-gray-600 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none"
+                className="w-full text-secondary  dark:text-primary px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition resize-none"
                 placeholder="Enter any feedback or notes about the interview..."
               />
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="px-8 py-6 bg-gray-50 rounded-b-xl flex justify-end gap-3">
+          <div className="px-8 py-6 bg-primary dark:bg-secondary rounded-b-xl flex justify-end gap-3">
             <button
               type="button"
               onClick={handleReset}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium disabled:opacity-50"
+              className="px-6 py-2.5 border border-primary-plus text-secondary  dark:text-primary rounded-lg hover:bg-primary dark:bg-secondary transition font-medium disabled:opacity-50"
               disabled={isLoading}
             >
               Reset
@@ -490,7 +490,7 @@ export default function InterviewRegistrationPage() {
               type="button"
               onClick={handleInterviewSubmit}
               disabled={isLoading}
-              className="px-6 py-2.5 bg-red-700 text-white rounded-lg hover:bg-red-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2.5 bg-cta text-primary dark:text-secondary rounded-lg hover:bg-cta transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -508,8 +508,8 @@ export default function InterviewRegistrationPage() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>All fields marked with <span className="text-red-500">*</span> are required</p>
+        <div className="mt-6 text-center text-sm text-primary">
+          <p>All fields marked with <span className="text-cta">*</span> are required</p>
         </div>
       </div>
     </div>

@@ -59,7 +59,7 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center min-h-[100dvh] bg-gradient-to-r from-gray-700 to-gray-900"
+            className="flex flex-col items-center justify-center min-h-[100dvh] bg-primary dark:bg-secondary"
           >
             <Image
               src="/images/logo.png"
@@ -81,7 +81,7 @@ export default function Home() {
             <div>
               {/* Role selection */}
               <div className="flex flex-col gap-4 mb-8 scale-90 sm:scale-100">
-                <h1 className="text-2xl py-4 font-bold text-gray-600">Log in as</h1>
+                <h1 className="text-2xl py-4 font-bold text-secondary dark:text-primary">Log in as</h1>
                 <div className="flex flex-wrap justify-center gap-8">
                   <Account
                     role="Administrator"
@@ -131,21 +131,21 @@ function Account({ role, href, isLoading, onClick }: AccountProps) {
       onClick={onClick}
       className="flex flex-col items-center gap-2"
     >
-      <div className="bg-red-800 opacity-90 px-4 py-2 rounded-lg shadow-md">
+      <div className="bg-cta opacity-90 px-4 py-2 rounded-lg shadow-md">
         {isLoading ? (
           <div
-            className="w-8 h-8 border-4 border-t-transparent border-gray-300 rounded-full animate-spin"
+            className="w-8 h-8 border-4 border-t-transparent border-primary-plus rounded-full animate-spin"
             role="status"
             aria-label={`Loading ${role}`}
           ></div>
         ) : (
           <UserCircle
-            className="w-8 h-8 text-gray-100 hover:text-gray-300 transition-colors duration-200 sm:w-10 sm:h-10"
+            className="w-8 h-8 text-primary dark:text-secondary hover:text-primary-plus transition-colors duration-200 sm:w-10 sm:h-10"
             aria-label={`${role} profile`}
           />
         )}
       </div>
-      <p className="text-xs text-gray-500">{role}</p>
+      <p className="text-xs text-primary">{role}</p>
     </a>
   );
 }

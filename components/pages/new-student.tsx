@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Loader2, UserPlus, MapPin, Users, Book, Camera, X, Upload, FileWarning, OctagonX, Verified, SplineIcon } from 'lucide-react';
 import clsx from 'clsx';
+import { getDistrictByRegion, Region } from '@/types/residence.type';
+
 
 // Type definitions (keep the same)
 type Gender = 'Male' | 'Female' | 'Other';
 type Section = 'Day Care' | 'Pre-Primary' | 'Primary';
 type Relationship = 'Mother' | 'Father' | 'Guardian' | 'Sibling' | 'Relative' | 'Other';
 type VerifyState = "idle" | "loading" | "success" | "error";
-
-
 
 
 interface GuardianData {
@@ -75,7 +75,9 @@ const STREAM_OPTIONS_MAP = {
   'Primary': ['Apple', 'Lemon', 'Orange']
 };
 
-const HOUSE_OPTIONS = ['Red House', 'Blue House', 'Green House', 'Yellow House'];
+
+
+const HOUSE_OPTIONS = ['Day', 'Bording'];
 const RELIGION_OPTIONS = ['Christianity', 'Islam', 'Hindu', 'Other'];
 const RELATIONSHIP_OPTIONS: Relationship[] = ['Mother', 'Father', 'Guardian', 'Sibling', 'Relative', 'Other'];
 
@@ -87,6 +89,8 @@ export default function StudentRegistrationPage() {
   const [submitStatus1, setSubmitStatus1] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitStatus2, setSubmitStatus2] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [districts, setDistricts] = useState<string[]>([]);
+  const [region, setRegion] = useState<Region>("");
 
   // Photo states - store files and previews only, not uploaded URLs
   const [studentPhotoFile, setStudentPhotoFile] = useState<File | null>(null);
@@ -105,7 +109,7 @@ export default function StudentRegistrationPage() {
   const [contuinuingGuardian2PhotoPreview, setContinuingGuardian2PhotoPreview] = useState<string>('');
 
   const [contuinuingGuardian1PhotoLink, setContinuingGuardian1PhotoLink] = useState<string>('');
-  const [contuinuingGuardian2PhotoLink, setContinuingGuardian2PhotoLink] = useState<string>(''); 
+  const [contuinuingGuardian2PhotoLink, setContinuingGuardian2PhotoLink] = useState<string>('');
 
   // check for data uploads
   const [guardian1_not_saved, setGuardian1_not_saved] = useState<boolean>(true);
@@ -159,6 +163,8 @@ export default function StudentRegistrationPage() {
   });
 
   const [showGuardian2, setShowGuardian2] = useState(false);
+
+
 
   // Reset class and stream when section changes
   useEffect(() => {
@@ -311,6 +317,12 @@ export default function StudentRegistrationPage() {
       reader.readAsDataURL(file);
     }
   };
+
+  //Handle Regions and Districts
+  const getDistricts = (selectedRegion: Region) => {
+    const availableDistricts = getDistrictByRegion(selectedRegion);
+    setDistricts([...availableDistricts]);
+  }
 
   const validateForm = (): boolean => {
     if (!studentData.name.first_name.trim()) {
@@ -486,8 +498,8 @@ export default function StudentRegistrationPage() {
     }
   };
 
-  
-  
+
+
 
   // Update guardian photo if was in existance before
   const patchGuardianPhoto = async (guardianId: string, photoUrl: string) => {
@@ -500,11 +512,11 @@ export default function StudentRegistrationPage() {
           body: JSON.stringify({ photo: photoUrl }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to update guardian photo");
       }
-  
+
       return response.json();
     } catch (error) {
       throw new Error("Something went wrong!")
@@ -578,42 +590,44 @@ export default function StudentRegistrationPage() {
         }
       } else {
         if (guardian1PhotoUrl) {
-            patchGuardianPhoto(continuingGuardian1ID ,guardian1PhotoUrl)
+          patchGuardianPhoto(continuingGuardian1ID, guardian1PhotoUrl)
         }
       }
 
       // Step 4: Create Guardian 2 (if provided)
       let guardian2_id = undefined;
 
-      if(!isContinuingGuardian2){if (guardian2_not_saved) {
-        if (showGuardian2 && studentData.guardian2?.full_name.trim()) {
-          guardian2_id = generateGuardianID();
-          const guardian2Payload = {
-            guardian_id: guardian2_id,
-            full_name: studentData.guardian2.full_name.trim(),
-            contact: studentData.guardian2.contact.trim(),
-            nin: studentData.guardian2.nin.trim(),
-            ...(studentData.guardian2.email?.trim() && { email: studentData.guardian2.email.trim() }),
-            ...(guardian2PhotoUrl && { photo: guardian2PhotoUrl }),
-          };
+      if (!isContinuingGuardian2) {
+        if (guardian2_not_saved) {
+          if (showGuardian2 && studentData.guardian2?.full_name.trim()) {
+            guardian2_id = generateGuardianID();
+            const guardian2Payload = {
+              guardian_id: guardian2_id,
+              full_name: studentData.guardian2.full_name.trim(),
+              contact: studentData.guardian2.contact.trim(),
+              nin: studentData.guardian2.nin.trim(),
+              ...(studentData.guardian2.email?.trim() && { email: studentData.guardian2.email.trim() }),
+              ...(guardian2PhotoUrl && { photo: guardian2PhotoUrl }),
+            };
 
 
-          const guardian2Response = await fetch("https://mjs-backend-server.onrender.com/guardians", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(guardian2Payload),
-          });
+            const guardian2Response = await fetch("https://mjs-backend-server.onrender.com/guardians", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(guardian2Payload),
+            });
 
-          if (!guardian2Response.ok) {
-            const errorData = await guardian2Response.json();
-            throw new Error(errorData.message || 'Failed to register secondary guardian');
+            if (!guardian2Response.ok) {
+              const errorData = await guardian2Response.json();
+              throw new Error(errorData.message || 'Failed to register secondary guardian');
+            }
+
+            setguardian2_not_saved(false);
           }
-
-          setguardian2_not_saved(false);
         }
-      }}else{
+      } else {
         if (guardian2PhotoUrl) {
-            patchGuardianPhoto(continuingGuardian2ID ,guardian2PhotoUrl)
+          patchGuardianPhoto(continuingGuardian2ID, guardian2PhotoUrl)
         }
       }
 
@@ -640,12 +654,12 @@ export default function StudentRegistrationPage() {
           guardian_id: guardian2_id,
           relationship: studentData.guardian2?.relationship
         },
-        ...(studentData?.religion && {religion: studentData.religion}),
+        ...(studentData?.religion && { religion: studentData.religion }),
         house: studentData?.house ?? null,
-        ...(studentData?.club && {club: studentData?.club.trim()}),
+        ...(studentData?.club && { club: studentData?.club.trim() }),
         photo: studentPhotoUrl ?? null,
-        ...(studentData?.LIN && {LIN: studentData?.LIN.trim()}),
-        ...(studentData?.payment_code && {payment_code: studentData?.payment_code.trim()}),
+        ...(studentData?.LIN && { LIN: studentData?.LIN.trim() }),
+        ...(studentData?.payment_code && { payment_code: studentData?.payment_code.trim() }),
       };
 
       // Add residence if any field is filled
@@ -744,7 +758,7 @@ export default function StudentRegistrationPage() {
   const currentStreamOptions = studentData.section ? STREAM_OPTIONS_MAP[studentData.section] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-primary to-primary dark:from-secondary dark:to-secondary">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Success/Error Alerts */}
         {submitStatus1 === 'success' && (
@@ -758,57 +772,57 @@ export default function StudentRegistrationPage() {
         )}
 
         {submitStatus1 === 'error' && (
-          <div className="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+          <div className="mb-6 bg-cta-low dark:bg-red-900/30 border border-cta-low dark:border-cta rounded-lg p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-cta dark:text-cta flex-shrink-0" />
             <div>
-              <p className="text-red-800 dark:text-red-300 font-medium">Failed to register</p>
-              <p className="text-red-700 dark:text-red-400 text-sm">{errorMessage}</p>
+              <p className="text-cta dark:text-cta-midtone font-medium">Failed to register</p>
+              <p className="text-cta dark:text-cta text-sm">{errorMessage}</p>
             </div>
           </div>
         )}
 
         {/* Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-xl shadow-lg border border-primary dark:border-secondary">
 
           {/* Personal Information Section */}
-          <div className="p-8 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-8 border-b border-primary dark:border-secondary">
             <div className="flex items-center gap-2 mb-6">
-              <UserPlus className="w-5 h-5 text-red-700 dark:text-red-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Personal Information</h2>
+              <UserPlus className="w-5 h-5 text-cta dark:text-cta-low" />
+              <h2 className="text-lg font-semibold text-secondary  dark:text-primary dark:text-primary">Personal Information</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    First Name <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                    First Name <span className="text-cta">*</span>
                   </label>
                   <input
                     type="text"
                     name="name.first_name"
                     value={studentData.name.first_name}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                     placeholder="John"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Last Name <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                    Last Name <span className="text-cta">*</span>
                   </label>
                   <input
                     type="text"
                     name="name.last_name"
                     value={studentData.name.last_name}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                     placeholder="Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                     Other Names
                   </label>
                   <input
@@ -816,20 +830,20 @@ export default function StudentRegistrationPage() {
                     name="name.other_names"
                     value={studentData.name.other_names}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                     placeholder="Optional"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Gender <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                    Gender <span className="text-cta">*</span>
                   </label>
                   <select
                     name="gender"
                     value={studentData.gender}
                     onChange={handleSelectChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                   >
                     <option value="">-- Select Gender --</option>
                     <option value="Male">Male</option>
@@ -839,27 +853,27 @@ export default function StudentRegistrationPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Date of Birth <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                    Date of Birth <span className="text-cta">*</span>
                   </label>
                   <input
                     type="date"
                     name="date_of_birth"
                     value={studentData.date_of_birth}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                     Religion
                   </label>
                   <select
                     name="religion"
                     value={studentData.religion}
                     onChange={handleSelectChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                   >
                     <option value="">-- Select Religion --</option>
                     {RELIGION_OPTIONS.map(religion => (
@@ -871,7 +885,7 @@ export default function StudentRegistrationPage() {
 
               {/* Photo Upload */}
               <div className="flex flex-col items-center justify-center">
-                <div className="w-48 h-48 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+                <div className="w-48 h-48 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg flex items-center justify-center bg-primary dark:bg-secondary  overflow-hidden relative">
                   {studentPhotoPreview ? (
                     <>
                       <img src={studentPhotoPreview} alt="Student" className="w-full h-full object-cover" />
@@ -881,15 +895,15 @@ export default function StudentRegistrationPage() {
                           setStudentPhotoFile(null);
                           setStudentPhotoPreview('');
                         }}
-                        className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                        className="absolute top-2 right-2 bg-cta text-primary dark:text-secondary p-1 rounded-full hover:bg-cta"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </>
                   ) : (
                     <div className="text-center">
-                      <Camera className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Student Photo</p>
+                      <Camera className="w-12 h-12 text-secondary-minus dark:text-primary dark:text-secondary mx-auto mb-2" />
+                      <p className="text-sm text-primary dark:text-secondary dark:text-secondary-minus">Student Photo</p>
                     </div>
                   )}
                 </div>
@@ -902,7 +916,7 @@ export default function StudentRegistrationPage() {
                 />
                 <label
                   htmlFor="student-photo-upload"
-                  className="mt-4 px-4 py-2 bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                  className="mt-4 px-4 py-2 bg-cta text-primary dark:text-secondary rounded-lg cursor-pointer hover:bg-cta transition flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
                   Upload Photo (Optional)
@@ -911,11 +925,11 @@ export default function StudentRegistrationPage() {
             </div>
 
             {/* Optional IDs Section */}
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Optional: Can be added later during updates</p>
+            <div className="mt-6 pt-6 border-t border-primary dark:border-secondary">
+              <p className="text-sm text-secondary  dark:text-primary mb-4">Optional: Can be added later during updates</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                     LIN (Learner Identification Number)
                   </label>
                   <input
@@ -923,13 +937,13 @@ export default function StudentRegistrationPage() {
                     name="LIN"
                     value={studentData.LIN || ''}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                     placeholder="Optional - Can add later"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                     Payment Code
                   </label>
                   <input
@@ -937,7 +951,7 @@ export default function StudentRegistrationPage() {
                     name="payment_code"
                     value={studentData.payment_code || ''}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                     placeholder="Optional - Can add later"
                   />
                 </div>
@@ -946,22 +960,22 @@ export default function StudentRegistrationPage() {
           </div>
 
           {/* Academic Information */}
-          <div className="p-8 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-8 border-b border-primary dark:border-secondary">
             <div className="flex items-center gap-2 mb-6">
-              <Book className="w-5 h-5 text-red-700 dark:text-red-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Academic Information</h2>
+              <Book className="w-5 h-5 text-cta dark:text-cta" />
+              <h2 className="text-lg font-semibold text-secondary  dark:text-primary dark:text-primary">Academic Information</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Section <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                  Academic Section <span className="text-cta">*</span>
                 </label>
                 <select
                   name="section"
                   value={studentData.section}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                 >
                   <option value="">-- Select Section --</option>
                   <option value="Day Care">Day Care</option>
@@ -971,15 +985,15 @@ export default function StudentRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Class <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                  Class <span className="text-cta">*</span>
                 </label>
                 <select
                   name="class.name"
                   value={studentData.class.name}
                   onChange={handleSelectChange}
                   disabled={!studentData.section}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary disabled:bg-primary dark:bg-secondary dark:disabled:bg-secondary disabled:cursor-not-allowed"
                 >
                   <option value="">-- Select Class --</option>
                   {currentClassOptions.map(className => (
@@ -989,7 +1003,7 @@ export default function StudentRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                   Stream
                 </label>
                 <select
@@ -997,7 +1011,7 @@ export default function StudentRegistrationPage() {
                   value={studentData.class.stream}
                   onChange={handleSelectChange}
                   disabled={!studentData.section || currentStreamOptions.length === 0}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary disabled:bg-primary dark:bg-secondary dark:disabled:bg-secondary disabled:cursor-not-allowed"
                 >
                   <option value="">-- Select Stream --</option>
                   {currentStreamOptions.map(stream => (
@@ -1007,14 +1021,14 @@ export default function StudentRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  House
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                  School Section
                 </label>
                 <select
                   name="house"
                   value={studentData.house}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                 >
                   <option value="">-- Select House --</option>
                   {HOUSE_OPTIONS.map(house => (
@@ -1025,7 +1039,7 @@ export default function StudentRegistrationPage() {
             </div>
 
             <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                 Club
               </label>
               <input
@@ -1033,50 +1047,62 @@ export default function StudentRegistrationPage() {
                 name="club"
                 value={studentData.club}
                 onChange={handleTextChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                 placeholder="Enter club name"
               />
             </div>
           </div>
 
           {/* Residence Information */}
-          <div className="p-8 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-8 border-b border-primary dark:border-secondary">
             <div className="flex items-center gap-2 mb-6">
-              <MapPin className="w-5 h-5 text-red-700 dark:text-red-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Residence Information</h2>
+              <MapPin className="w-5 h-5 text-cta dark:text-cta" />
+              <h2 className="text-lg font-semibold text-secondary  dark:text-primary dark:text-primary">Residence Information</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                   Region
                 </label>
-                <input
-                  type="text"
+                <select
                   name="residence.region"
-                  value={studentData.residence.region}
-                  onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Central"
-                />
+                  onChange={(e) => {
+                    const selectedRegion = e.target.value as Region;
+                    handleSelectChange(e);
+                    setRegion(selectedRegion);
+                    getDistricts(selectedRegion)
+                  }}
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
+                >
+                  <option value='' disabled>-- Select Region --</option>
+                  <option value='Central' >Central</option>
+                  <option value='Eastern' >Eastern</option>
+                  <option value='Western' >Western</option>
+                  <option value='Northern' >North</option>
+                </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                   District
                 </label>
-                <input
-                  type="text"
+                <select
                   name="residence.district"
                   value={studentData.residence.district}
-                  onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Kampala"
-                />
+                  onChange={handleSelectChange}
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
+                >
+                  <option value='' disabled>-- Select District --</option>
+                  {
+                    districts.map(district => (
+                      <option key={district} value={district}>{district}</option>
+                    ))}
+                </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                   Village
                 </label>
                 <input
@@ -1084,7 +1110,7 @@ export default function StudentRegistrationPage() {
                   name="residence.village"
                   value={studentData.residence.village}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                   placeholder="Nakawa"
                 />
               </div>
@@ -1092,27 +1118,27 @@ export default function StudentRegistrationPage() {
           </div>
 
           {/* Guardian 1 Information */}
-          <div className="p-8 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/10">
+          <div className="p-8 border-b border-primary-plus dark:border-secondary bg-[#eff6ff] dark:bg-blue-[#1e3a8a]/10">
             <div className="flex items-center gap-2 mb-6">
-              <Users className="w-5 h-5 text-red-700 dark:text-red-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Primary Guardian Information</h2>
+              <Users className="w-5 h-5 text-cta dark:text-cta" />
+              <h2 className="text-lg font-semibold text-secondary  dark:text-primary dark:text-primary">Primary Guardian Information</h2>
             </div>
 
             {!guardian1_not_saved ? (
-              <div className="w-full bg-red-100 border-red-500 border-1 text-slate-950 font-light text-sm rounded-md p-6 flex gap-4 items-center">
-                <FileWarning className='size-12 md:size-6 text-red-800' />
+              <div className="w-full bg-red-100 border-cta border-1 text-slate-950 font-light text-sm rounded-md p-6 flex gap-4 items-center">
+                <FileWarning className='size-12 md:size-6 text-cta' />
                 <p>Guadian data has been collected if your seeing this it means you have unfill fields which are are required on students data</p>
               </div>
             ) : (
               <div>
                 {/* Tabs */}
-                <div className='flex gap-4 mb-8'>
+                <div className='flex gap-4 mb-8 text-secondary dark:text-primary'>
                   <span
                     onClick={() => setIsContinuingGuardian1(false)}
-                    className={clsx('cursor-pointer border-1 border-slate-700 py-1 px-2 text-sm rounded-md', !isContinuingGuardian1 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>New Guardian</span>
+                    className={clsx('cursor-pointer border-1 border-secondary py-1 px-2 text-sm rounded-md', !isContinuingGuardian1 && 'bg-secondary dark:bg-cta text-primary dark:text-secondary border-none')}>New Guardian</span>
                   <span
                     onClick={() => setIsContinuingGuardian1(true)}
-                    className={clsx('cursor-pointer border-1 border-slate-500  py-1 px-2 text-sm rounded-md', isContinuingGuardian1 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>Continuing Parent</span>
+                    className={clsx('cursor-pointer border-1 border-secondary-midtone  py-1 px-2 text-sm rounded-md ', isContinuingGuardian1 && 'bg-secondary dark:bg-cta text-primary dark:text-secondary border-none')}>Continuing Parent</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -1120,46 +1146,46 @@ export default function StudentRegistrationPage() {
                   {!isContinuingGuardian1 ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Full Name <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Full Name <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           name="guardian1.full_name"
                           value={studentData.guardian1?.full_name}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="Jane Doe"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Contact <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Contact <span className="text-cta">*</span>
                         </label>
                         <input
                           type="tel"
                           name="guardian1.contact"
                           value={studentData.guardian1?.contact}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="+256700000000"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          NIN <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          NIN <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           name="guardian1.nin"
                           value={studentData.guardian1?.nin}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="CM00000000000AA"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                           Email
                         </label>
                         <input
@@ -1167,19 +1193,19 @@ export default function StudentRegistrationPage() {
                           name="guardian1.email"
                           value={studentData.guardian1?.email}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="jane@example.com (Optional)"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Relationship <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Relationship <span className="text-cta">*</span>
                         </label>
                         <select
                           name="guardian1.relationship"
                           value={studentData.guardian1?.relationship}
                           onChange={handleSelectChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                         >
                           <option value="">-- Select Relationship --</option>
                           {RELATIONSHIP_OPTIONS.map(rel => (
@@ -1189,17 +1215,17 @@ export default function StudentRegistrationPage() {
                       </div>
                     </div>
                   ) : (
-                    <div>
+                    <div className='text-secondary dark:text-primary'>
                       <p className='text-sm mb-4'>* For continuing parents please provide the GuardianID</p>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Guardian ID: <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Guardian ID: <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           value={continuingGuardian1ID}
-                          onChange={(e) => {setContinuingGuardian1ID(e.target.value), setVerifyState1('idle')}}
-                          className="w-72 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          onChange={(e) => { setContinuingGuardian1ID(e.target.value), setVerifyState1('idle') }}
+                          className="w-72 px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="Gxxxx--xxxx-xxxx-xxx"
                         />
                       </div>
@@ -1207,20 +1233,20 @@ export default function StudentRegistrationPage() {
                         disabled={verifyState1 === "loading"}
                         onClick={() => getContinuingGuardian1Info(continuingGuardian1ID)}
                         className={`
-                          py-2 px-4 rounded-md my-4 text-sm text-white flex items-center justify-center gap-2
+                          py-2 px-4 rounded-md my-4 text-sm text-primary dark:text-secondary flex items-center justify-center gap-2
                           transition-all duration-200
-                          ${verifyState1 === "idle" && "bg-green-800 hover:bg-green-800"
+                          ${verifyState1 === "idle" && "bg-verify hover:bg-success"
                           }
-                          ${verifyState1 === "loading" && "bg-green-400 cursor-not-allowed"
+                          ${verifyState1 === "loading" && "bg-loading cursor-not-allowed"
                           }
-                          ${verifyState1 === "success" && "bg-green-600"
+                          ${verifyState1 === "success" && "bg-verify"
                           }
-                          ${verifyState1 === "error" && "bg-red-600"
+                          ${verifyState1 === "error" && "bg-cta"
                           }
                         `}
                       >
                         {verifyState1 === "loading" && (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         )}
                         {verifyState1 === "success" && <Verified />}
                         {verifyState1 === "error" && <OctagonX />}
@@ -1236,46 +1262,46 @@ export default function StudentRegistrationPage() {
                       {/* if verfied show data */}
                       {verifyState1 === "success" && (<div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Full Name <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Full Name <span className="text-cta">*</span>
                           </label>
                           <input
                             type="text"
                             name="guardian1.full_name"
                             value={studentData.guardian1?.full_name}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="Jane Doe"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Contact <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Contact <span className="text-cta">*</span>
                           </label>
                           <input
                             type="tel"
                             name="guardian1.contact"
                             value={studentData.guardian1?.contact}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="+256700000000"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            NIN <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            NIN <span className="text-cta">*</span>
                           </label>
                           <input
                             type="text"
                             name="guardian1.nin"
                             value={studentData.guardian1?.nin}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="CM00000000000AA"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                             Email
                           </label>
                           <input
@@ -1283,19 +1309,19 @@ export default function StudentRegistrationPage() {
                             name="guardian1.email"
                             value={studentData.guardian1?.email}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="jane@example.com (Optional)"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Relationship (Change this field if needed) <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Relationship (Change this field if needed) <span className="text-cta">*</span>
                           </label>
                           <select
                             name="guardian1.relationship"
                             value={studentData.guardian1?.relationship}
                             onChange={handleSelectChange}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                           >
                             <option value="">-- Select Relationship --</option>
                             {RELATIONSHIP_OPTIONS.map(rel => (
@@ -1311,8 +1337,8 @@ export default function StudentRegistrationPage() {
 
                   {/* Guardian 1 Photo Upload OR Show collected guardian photo */}
                   {!isContinuingGuardian1 ? (
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                    <div className="flex flex-col items-center justify-center text-secondary dark:text-primary">
+                      <div className="w-40 h-40 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg flex items-center justify-center bg-primary dark:bg-secondary  overflow-hidden relative">
                         {guardian1PhotoPreview ? (
                           <>
                             <img src={guardian1PhotoPreview} alt="Guardian 1" className="w-full h-full object-cover" />
@@ -1322,15 +1348,15 @@ export default function StudentRegistrationPage() {
                                 setGuardian1PhotoFile(null);
                                 setGuardian1PhotoPreview('');
                               }}
-                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              className="absolute top-1 right-1 bg-cta text-primary dark:text-secondary p-1 rounded-full hover:bg-cta"
                             >
                               <X className="w-3 h-3" />
                             </button>
                           </>
                         ) : (
                           <div className="text-center">
-                            <Camera className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Guardian Photo</p>
+                            <Camera className="w-10 h-10 text-secondary-minus dark:text-primary dark:text-secondary mx-auto mb-2" />
+                            <p className="text-xs text-secondary-minus dark:text-primary">Guardian Photo</p>
                           </div>
                         )}
                       </div>
@@ -1343,19 +1369,19 @@ export default function StudentRegistrationPage() {
                       />
                       <label
                         htmlFor="guardian1-photo-upload"
-                        className="mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                        className="mt-3 px-3 py-1.5 text-sm bg-cta text-primary dark:text-secondary rounded-lg cursor-pointer hover:bg-cta transition flex items-center gap-2"
                       >
                         <Upload className="w-3 h-3" />
                         Upload Photo
                       </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Optional</p>
+                      <p className="text-xs text-secondary dark:text-primary dark:text-primary-plus mt-2">Optional</p>
                     </div>
                   ) : (
                     <div className={clsx(
                       "flex flex-col items-center justify-center",
                       verifyState1 !== "success" && "hidden"
                     )}>
-                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                      <div className="text-secondary dark:text-primary w-40 h-40 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg flex items-center justify-center bg-primary dark:bg-secondary  overflow-hidden relative">
                         {contuinuingGuardian1PhotoPreview ? (
                           <>
                             <img src={contuinuingGuardian1PhotoPreview || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
@@ -1365,7 +1391,7 @@ export default function StudentRegistrationPage() {
                                 setContinuingGuardian1PhotoFile(null);
                                 setContinuingGuardian1PhotoPreview('');
                               }}
-                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              className="absolute top-1 right-1 bg-cta text-primary dark:text-secondary p-1 rounded-full hover:bg-cta"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -1377,7 +1403,7 @@ export default function StudentRegistrationPage() {
                         )}
                       </div>
                       {!contuinuingGuardian1PhotoLink ? (
-                        <div className='flex flex-col justify-center items-center'>
+                        <div className='flex flex-col justify-center items-center text-secondary dark:text-primary'>
                           <input
                             type="file"
                             accept="image/*"
@@ -1387,12 +1413,12 @@ export default function StudentRegistrationPage() {
                           />
                           <label
                             htmlFor="guardian1-photo-upload"
-                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-cta text-primary dark:text-secondary rounded-lg cursor-pointer hover:bg-cta transition flex items-center gap-2"
                           >
                             <Camera className="w-3 h-3" />
                             Upload New Photo
                           </label>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This action updates the Guardian's photo in the entire system</p>
+                          <p className="text-xs text-secondary dark:text-secondary-minus mt-2">This action updates the Guardian's photo in the entire system</p>
                         </div>
                       ) : (
                         <div className='flex flex-col justify-center items-center'>
@@ -1406,12 +1432,12 @@ export default function StudentRegistrationPage() {
                           />
                           <label
                             htmlFor="guardian1-photo-upload"
-                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-gray-700 text-white rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-secondary text-primary dark:text-secondary rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
                           >
                             <Verified className="w-3 h-3" />
                             Verified Guardian
                           </label>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This photo can only be changed on student or guardian update</p>
+                          <p className="text-xs text-secondary dark:text-secondary-minus mt-2">This photo can only be changed on student or guardian update</p>
                         </div>
                       )}
                     </div>
@@ -1423,11 +1449,11 @@ export default function StudentRegistrationPage() {
 
           {/* Add Guardian 2 Button */}
           {!showGuardian2 && guardian2_not_saved && (
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-6 border-b border-primary dark:border-secondary text-secondary dark:text-primary">
               <button
                 type="button"
                 onClick={() => setShowGuardian2(true)}
-                className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-700 dark:hover:text-red-400 transition flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg text-secondary  dark:text-primary dark:text-secondary-minus hover:border-cta hover:text-cta dark:hover:text-cta transition flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-5 h-5" />
                 Add Secondary Guardian (Optional)
@@ -1437,11 +1463,11 @@ export default function StudentRegistrationPage() {
 
           {/* Guardian 2 Information */}
           {showGuardian2 && guardian2_not_saved && (
-            <div className="p-8 border-b border-gray-200 dark:border-gray-700 bg-green-50 dark:bg-green-900/10">
+            <div className="p-8 border-b border-primary-plus dark:border-secondary bg-[#f0fdf4] dark:bg-[#14532d]/10 text-secondary dark:text-primary">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-red-700 dark:text-red-400" />
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Secondary Guardian Information</h2>
+                  <Users className="w-5 h-5 text-cta dark:text-cta" />
+                  <h2 className="text-lg font-semibold text-secondary  dark:text-primary dark:text-primary">Secondary Guardian Information</h2>
                 </div>
                 <button
                   type="button"
@@ -1461,7 +1487,7 @@ export default function StudentRegistrationPage() {
                     setGuardian2PhotoFile(null);
                     setGuardian2PhotoPreview('');
                   }}
-                  className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+                  className="text-cta dark:text-cta hover:text-cta dark:hover:text-cta-midtone transition"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1473,10 +1499,10 @@ export default function StudentRegistrationPage() {
                 <div className='flex gap-4 mb-8'>
                   <span
                     onClick={() => setIsContinuingGuardian2(false)}
-                    className={clsx('cursor-pointer border-1 border-slate-700 py-1 px-2 text-sm rounded-md', !isContinuingGuardian2 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>New Guardian</span>
+                    className={clsx('cursor-pointer border-1 border-secondary py-1 px-2 text-sm rounded-md', !isContinuingGuardian2 && 'bg-secondary dark:bg-cta text-primary dark:text-secondary border-none')}>New Guardian</span>
                   <span
                     onClick={() => setIsContinuingGuardian2(true)}
-                    className={clsx('cursor-pointer border-1 border-slate-500  py-1 px-2 text-sm rounded-md', isContinuingGuardian2 && 'bg-slate-700 dark:bg-red-700 text-slate-50 border-none')}>Continuing Parent</span>
+                    className={clsx('cursor-pointer border-1 border-secondary-midtone  py-1 px-2 text-sm rounded-md', isContinuingGuardian2 && 'bg-secondary dark:bg-cta text-primary dark:text-secondary border-none')}>Continuing Parent</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -1484,46 +1510,46 @@ export default function StudentRegistrationPage() {
                   {!isContinuingGuardian2 ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Full Name <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Full Name <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           name="guardian2.full_name"
                           value={studentData.guardian2?.full_name}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="Jane Doe"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Contact <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Contact <span className="text-cta">*</span>
                         </label>
                         <input
                           type="tel"
                           name="guardian2.contact"
                           value={studentData.guardian2?.contact}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="+256700000000"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          NIN <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          NIN <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           name="guardian2.nin"
                           value={studentData.guardian2?.nin}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="CM00000000000AA"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                           Email
                         </label>
                         <input
@@ -1531,19 +1557,19 @@ export default function StudentRegistrationPage() {
                           name="guardian2.email"
                           value={studentData.guardian2?.email}
                           onChange={handleTextChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="jane@example.com (Optional)"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Relationship <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Relationship <span className="text-cta">*</span>
                         </label>
                         <select
                           name="guardian2.relationship"
                           value={studentData.guardian2?.relationship}
                           onChange={handleSelectChange}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                         >
                           <option value="">-- Select Relationship --</option>
                           {RELATIONSHIP_OPTIONS.map(rel => (
@@ -1556,14 +1582,14 @@ export default function StudentRegistrationPage() {
                     <div>
                       <p className='text-sm mb-4'>* For continuing parents please provide the GuardianID</p>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Guardian ID: <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                          Guardian ID: <span className="text-cta">*</span>
                         </label>
                         <input
                           type="text"
                           value={continuingGuardian2ID}
-                          onChange={(e) => {setContinuingGuardian2ID(e.target.value), setVerifyState2('idle')}}
-                          className="w-72 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          onChange={(e) => { setContinuingGuardian2ID(e.target.value), setVerifyState2('idle') }}
+                          className="w-72 px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                           placeholder="Gxxxx--xxxx-xxxx-xxx"
                         />
                       </div>
@@ -1571,20 +1597,20 @@ export default function StudentRegistrationPage() {
                         disabled={verifyState2 === "loading"}
                         onClick={() => getContinuingGuardian2Info(continuingGuardian2ID)}
                         className={`
-                          py-2 px-4 rounded-md my-4 text-sm text-white flex items-center justify-center gap-2
+                          py-2 px-4 rounded-md my-4 text-sm text-primary dark:text-secondary flex items-center justify-center gap-2
                           transition-all duration-200
-                          ${verifyState2 === "idle" && "bg-green-800 hover:bg-green-800"
+                          ${verifyState2 === "idle" && "bg-verify hover:bg-success"
                           }
-                          ${verifyState2 === "loading" && "bg-green-400 cursor-not-allowed"
+                          ${verifyState2 === "loading" && "bg-loading-400 cursor-not-allowed"
                           }
-                          ${verifyState2 === "success" && "bg-green-600"
+                          ${verifyState2 === "success" && "bg-verify"
                           }
-                          ${verifyState2 === "error" && "bg-red-600"
+                          ${verifyState2 === "error" && "bg-cta"
                           }
                         `}
                       >
                         {verifyState2 === "loading" && (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         )}
                         {verifyState2 === "success" && <Verified />}
                         {verifyState2 === "error" && <OctagonX />}
@@ -1600,46 +1626,46 @@ export default function StudentRegistrationPage() {
                       {/* if verfied show data */}
                       {verifyState2 === "success" && (<div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Full Name <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Full Name <span className="text-cta">*</span>
                           </label>
                           <input
                             type="text"
                             name="guardian2.full_name"
                             value={studentData.guardian2?.full_name}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="Jane Doe"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Contact <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Contact <span className="text-cta">*</span>
                           </label>
                           <input
                             type="tel"
                             name="guardian2.contact"
                             value={studentData.guardian2?.contact}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="+256700000000"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            NIN <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            NIN <span className="text-cta">*</span>
                           </label>
                           <input
                             type="text"
                             name="guardian2.nin"
                             value={studentData.guardian2?.nin}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="CM00000000000AA"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
                             Email
                           </label>
                           <input
@@ -1647,19 +1673,19 @@ export default function StudentRegistrationPage() {
                             name="guardian2.email"
                             value={studentData.guardian2?.email}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary dark:text-secondary placeholder-secondary-midtone dark:placeholder-secondary-minus"
                             placeholder="jane@example.com (Optional)"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Relationship (Change this field if needed) <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-secondary  dark:text-primary dark:text-primary-plus mb-1">
+                            Relationship (Change this field if needed) <span className="text-cta">*</span>
                           </label>
                           <select
                             name="guardian2.relationship"
                             value={studentData.guardian2?.relationship}
                             onChange={handleSelectChange}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full px-3 py-2 border border-primary-plus dark:border-secondary rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary  text-secondary  dark:text-primary dark:text-primary"
                           >
                             <option value="">-- Select Relationship --</option>
                             {RELATIONSHIP_OPTIONS.map(rel => (
@@ -1676,7 +1702,7 @@ export default function StudentRegistrationPage() {
                   {/* Guardian 2 Photo Upload OR Show collected guardian photo */}
                   {!isContinuingGuardian2 ? (
                     <div className="flex flex-col items-center justify-center">
-                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                      <div className="w-40 h-40 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg flex items-center justify-center bg-primary dark:bg-secondary  overflow-hidden relative">
                         {guardian2PhotoPreview ? (
                           <>
                             <img src={guardian2PhotoPreview} alt="Guardian 2" className="w-full h-full object-cover" />
@@ -1686,15 +1712,15 @@ export default function StudentRegistrationPage() {
                                 setGuardian2PhotoFile(null);
                                 setGuardian2PhotoPreview('');
                               }}
-                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              className="absolute top-1 right-1 bg-cta text-primary dark:text-secondary p-1 rounded-full hover:bg-cta"
                             >
                               <X className="w-3 h-3" />
                             </button>
                           </>
                         ) : (
                           <div className="text-center">
-                            <Camera className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Guardian Photo</p>
+                            <Camera className="w-10 h-10 text-secondary-minus dark:text-primary dark:text-secondary mx-auto mb-2" />
+                            <p className="text-xs text-primary dark:text-secondary dark:text-secondary-minus">Guardian Photo</p>
                           </div>
                         )}
                       </div>
@@ -1707,19 +1733,19 @@ export default function StudentRegistrationPage() {
                       />
                       <label
                         htmlFor="guardian2-photo-upload"
-                        className="mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                        className="mt-3 px-3 py-1.5 text-sm bg-cta text-primary dark:text-secondary rounded-lg cursor-pointer hover:bg-cta transition flex items-center gap-2"
                       >
                         <Upload className="w-3 h-3" />
                         Upload Photo
                       </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Optional</p>
+                      <p className="text-xs text-secondary dark:text-primary dark:text-primary-plus mt-2">Optional</p>
                     </div>
                   ) : (
                     <div className={clsx(
                       "flex flex-col items-center justify-center",
                       verifyState2 !== "success" && "hidden"
                     )}>
-                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700 overflow-hidden relative">
+                      <div className="w-40 h-40 border-2 border-dashed border-primary-plus dark:border-secondary rounded-lg flex items-center justify-center bg-primary dark:bg-secondary  overflow-hidden relative">
                         {contuinuingGuardian2PhotoPreview ? (
                           <>
                             <img src={contuinuingGuardian2PhotoPreview || 'https://res.cloudinary.com/dzidperyt/image/upload/v1767464743/397057724_11539820_lrfqg3.png'} alt="Conttinuing Guardian 1" className="w-full h-full object-cover" />
@@ -1729,7 +1755,7 @@ export default function StudentRegistrationPage() {
                                 setContinuingGuardian2PhotoFile(null);
                                 setContinuingGuardian2PhotoPreview('');
                               }}
-                              className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              className="absolute top-1 right-1 bg-cta text-primary dark:text-secondary p-1 rounded-full hover:bg-cta"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -1751,12 +1777,12 @@ export default function StudentRegistrationPage() {
                           />
                           <label
                             htmlFor="guardian2-photo-upload"
-                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-red-700 text-white rounded-lg cursor-pointer hover:bg-red-800 transition flex items-center gap-2"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-cta text-primary dark:text-secondary rounded-lg cursor-pointer hover:bg-cta transition flex items-center gap-2"
                           >
                             <Camera className="w-3 h-3" />
                             Upload New Photo
                           </label>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This action updates the Guardian's photo in the entire system {studentData.guardian2?.contact}</p>
+                          <p className="text-xs text-secondary dark:text-secondary-minus mt-2">This action updates the Guardian's photo in the entire system</p>
                         </div>
                       ) : (
                         <div className='flex flex-col justify-center items-center'>
@@ -1770,12 +1796,12 @@ export default function StudentRegistrationPage() {
                           />
                           <label
                             htmlFor="guardian2-photo-upload"
-                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-gray-700 text-white rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
+                            className="w-48 mt-3 px-3 py-1.5 text-sm bg-secondary text-primary dark:text-secondary rounded-lg cursor-pointer  flex items-center gap-2 justify-center"
                           >
                             <Verified className="w-3 h-3" />
                             Verified Guardian
                           </label>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">This photo can only be changed on student or guardian update</p>
+                          <p className="text-xs text-secondary dark:text-secondary-minus mt-2">This photo can only be changed on student or guardian update</p>
                         </div>
                       )}
                     </div>
@@ -1786,11 +1812,11 @@ export default function StudentRegistrationPage() {
           )}
 
           {/* Form Actions */}
-          <div className="px-8 py-6 bg-gray-50 dark:bg-gray-900/50 rounded-b-xl flex justify-end gap-3">
+          <div className="px-8 py-6 bg-primary-plus/10 dark:bg-secondary dark:bg-secondary/50 rounded-b-xl flex justify-end gap-3">
             <button
               type="button"
               onClick={handleReset}
-              className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition font-medium disabled:opacity-50"
+              className="px-6 py-2.5 border border-primary-plus dark:border-secondary text-secondary  dark:text-primary dark:text-primary-plus rounded-lg hover:bg-primary dark:bg-secondary dark:hover:bg-secondary transition font-medium disabled:opacity-50"
               disabled={isLoading}
             >
               Reset
@@ -1799,7 +1825,7 @@ export default function StudentRegistrationPage() {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="px-6 py-2.5 bg-red-700 text-white rounded-lg hover:bg-red-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2.5 bg-cta text-primary dark:text-secondary rounded-lg hover:bg-cta transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -1817,8 +1843,8 @@ export default function StudentRegistrationPage() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>All fields marked with <span className="text-red-500">*</span> are required</p>
+        <div className="mt-6 text-center text-sm text-secondary-minus dark:text-primary-plus">
+          <p>All fields marked with <span className="text-cta">*</span> are required</p>
           <p className="mt-2">Registration ID and Guardian IDs will be auto-generated</p>
         </div>
       </div>

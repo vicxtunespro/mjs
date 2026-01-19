@@ -73,9 +73,9 @@ const initialEvents = [
 const eventCategories = {
   academic: { name: 'Academic', color: 'bg-blue-100 text-blue-800 border-blue-300' },
   sports: { name: 'Sports', color: 'bg-green-100 text-green-800 border-green-300' },
-  social: { name: 'Social', color: 'bg-purple-100 text-purple-800 border-purple-300' },
+  social: { name: 'Social', color: 'bg-primary text-secondary  dark:text-primary border-secondary-midtone' },
   administration: { name: 'Administration', color: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
-  holiday: { name: 'Holiday', color: 'bg-red-100 text-red-800 border-red-300' }
+  holiday: { name: 'Holiday', color: 'bg-red-100 text-cta border-cta-midtone' }
 };
 
 const EventManagementSystem = () => {
@@ -233,13 +233,13 @@ const EventManagementSystem = () => {
   const currentYear = selectedDate.getFullYear();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-primary dark:bg-secondary p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">School Event Calendar</h1>
+          <h1 className="text-3xl font-bold text-secondary dark:text-primary">School Event Calendar</h1>
           <button
             onClick={() => setShowEventForm(true)}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="flex items-center bg-blue-600 text-primary dark:text-secondary px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             <Plus size={18} className="mr-2" />
             Add Event
@@ -281,28 +281,28 @@ const EventManagementSystem = () => {
         )}
 
         {/* Controls */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-primary dark:bg-secondary rounded-lg shadow p-4 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-secondary dark:text-primary">
                 {currentMonth} {currentYear}
               </h2>
               <div className="flex space-x-2">
                 <button
                   onClick={() => setView('month')}
-                  className={`px-3 py-1 rounded ${view === 'month' ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`px-3 py-1 rounded ${view === 'month' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Month
                 </button>
                 <button
                   onClick={() => setView('week')}
-                  className={`px-3 py-1 rounded ${view === 'week' ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`px-3 py-1 rounded ${view === 'week' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Week
                 </button>
                 <button
                   onClick={() => setView('day')}
-                  className={`px-3 py-1 rounded ${view === 'day' ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`px-3 py-1 rounded ${view === 'day' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Day
                 </button>
@@ -311,7 +311,7 @@ const EventManagementSystem = () => {
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
-                <Filter size={18} className="text-gray-500 mr-2" />
+                <Filter size={18} className="text-primary dark:text-secondary mr-2" />
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
@@ -326,7 +326,7 @@ const EventManagementSystem = () => {
 
               <button
                 onClick={printEvents}
-                className="flex items-center text-gray-600 hover:text-gray-800 px-3 py-1 rounded hover:bg-gray-100"
+                className="flex items-center text-secondary  dark:text-primary hover:text-secondary  dark:text-primary px-3 py-1 rounded hover:bg-primary dark:bg-secondary"
               >
                 <Printer size={18} className="mr-1" />
                 Print
@@ -336,15 +336,15 @@ const EventManagementSystem = () => {
         </div>
 
         {/* Calendar View */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-primary dark:bg-secondary rounded-lg shadow p-4 mb-6">
           {view === 'month' && <MonthView events={filteredEvents} onEdit={handleEdit} onDelete={handleDelete} />}
           {view === 'week' && <WeekView events={filteredEvents} onEdit={handleEdit} onDelete={handleDelete} />}
           {view === 'day' && <DayView events={filteredEvents} onEdit={handleEdit} onDelete={handleDelete} />}
         </div>
 
         {/* Upcoming Events List */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Upcoming Events</h2>
+        <div className="bg-primary dark:bg-secondary rounded-lg shadow p-4">
+          <h2 className="text-xl font-semibold text-secondary  dark:text-primary mb-4">Upcoming Events</h2>
           <div className="space-y-4">
             {filteredEvents
               .filter(event => new Date(event.date) >= new Date())
@@ -359,19 +359,19 @@ const EventManagementSystem = () => {
 
       {/* Event Form Modal */}
       {showEventForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div className="fixed inset-0 bg-secondary bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-primary dark:bg-secondary rounded-lg shadow-xl w-full max-w-md">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-lg font-semibold text-secondary dark:text-primary">
                 {editingEvent ? 'Edit Event' : 'Create New Event'}
               </h3>
-              <button onClick={() => { setShowEventForm(false); setEditingEvent(null); resetForm(); }} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => { setShowEventForm(false); setEditingEvent(null); resetForm(); }} className="text-primary dark:text-secondary hover:text-secondary dark:text-primary">
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Event Title</label>
                 <input
                   type="text"
                   name="title"
@@ -383,7 +383,7 @@ const EventManagementSystem = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Description</label>
                 <textarea
                   name="description"
                   value={newEvent.description}
@@ -395,7 +395,7 @@ const EventManagementSystem = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Date</label>
                   <input
                     type="date"
                     name="date"
@@ -407,7 +407,7 @@ const EventManagementSystem = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Category</label>
                   <select
                     name="category"
                     value={newEvent.category}
@@ -423,7 +423,7 @@ const EventManagementSystem = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Start Time</label>
                   <input
                     type="time"
                     name="startTime"
@@ -435,7 +435,7 @@ const EventManagementSystem = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                  <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">End Time</label>
                   <input
                     type="time"
                     name="endTime"
@@ -448,7 +448,7 @@ const EventManagementSystem = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Location</label>
                 <input
                   type="text"
                   name="location"
@@ -459,7 +459,7 @@ const EventManagementSystem = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Participants</label>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Participants</label>
                 <input
                   type="text"
                   name="participants"
@@ -477,9 +477,9 @@ const EventManagementSystem = () => {
                   checked={newEvent.reminder}
                   onChange={handleInputChange}
                   id="reminder"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-primary-plus rounded"
                 />
-                <label htmlFor="reminder" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="reminder" className="ml-2 block text-sm text-secondary dark:text-primary">
                   Set reminder for this event
                 </label>
               </div>
@@ -488,13 +488,13 @@ const EventManagementSystem = () => {
                 <button
                   type="button"
                   onClick={() => { setShowEventForm(false); setEditingEvent(null); resetForm(); }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-primary-plus rounded-md text-secondary  dark:text-primary hover:bg-primary dark:bg-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                  className="px-4 py-2 bg-blue-600 text-primary dark:text-secondary rounded-md hover:bg-blue-700 flex items-center"
                 >
                   <Save size={18} className="mr-2" />
                   {editingEvent ? 'Update Event' : 'Create Event'}
@@ -523,7 +523,7 @@ const MonthView = ({ events, onEdit, onDelete }) => {
     <div className="month-view">
       <div className="grid grid-cols-7 gap-2 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center font-medium text-gray-500 py-2">
+          <div key={day} className="text-center font-medium text-primary dark:text-secondary py-2">
             {day}
           </div>
         ))}
@@ -537,9 +537,9 @@ const MonthView = ({ events, onEdit, onDelete }) => {
           return (
             <div
               key={day}
-              className={`min-h-24 p-2 border rounded-lg ${isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'}`}
+              className={`min-h-24 p-2 border rounded-lg ${isToday ? 'bg-blue-50 border-blue-200' : 'border-primary'}`}
             >
-              <div className={`text-right font-medium ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
+              <div className={`text-right font-medium ${isToday ? 'text-blue-600' : 'text-secondary dark:text-primary'}`}>
                 {day}
               </div>
               <div className="mt-1 space-y-1">
@@ -553,7 +553,7 @@ const MonthView = ({ events, onEdit, onDelete }) => {
                   </div>
                 ))}
                 {dayEvents.length > 2 && (
-                  <div className="text-xs text-gray-500">+{dayEvents.length - 2} more</div>
+                  <div className="text-xs text-primary">+{dayEvents.length - 2} more</div>
                 )}
               </div>
             </div>
@@ -568,7 +568,7 @@ const MonthView = ({ events, onEdit, onDelete }) => {
 const WeekView = ({ events, onEdit, onDelete }) => {
   return (
     <div className="week-view">
-      <div className="text-center py-10 text-gray-500">
+      <div className="text-center py-10 text-primary">
         Week view implementation would go here
       </div>
     </div>
@@ -579,7 +579,7 @@ const WeekView = ({ events, onEdit, onDelete }) => {
 const DayView = ({ events, onEdit, onDelete }) => {
   return (
     <div className="day-view">
-      <div className="text-center py-10 text-gray-500">
+      <div className="text-center py-10 text-primary">
         Day view implementation would go here
       </div>
     </div>
@@ -602,8 +602,8 @@ const EventCard = ({ event, onEdit, onDelete }) => {
               <Bell size={14} className="ml-2 text-yellow-500" />
             )}
           </div>
-          <h3 className="font-semibold text-gray-800 mb-1">{event.title}</h3>
-          <p className="text-sm text-gray-600 mb-2">{event.description}</p>
+          <h3 className="font-semibold text-secondary  dark:text-primary mb-1">{event.title}</h3>
+          <p className="text-sm text-secondary  dark:text-primary mb-2">{event.description}</p>
         </div>
         <div className="flex space-x-2">
           <button
@@ -615,7 +615,7 @@ const EventCard = ({ event, onEdit, onDelete }) => {
           </button>
           <button
             onClick={() => onDelete(event.id)}
-            className="text-red-600 hover:text-red-800"
+            className="text-cta hover:text-cta"
             aria-label="Delete event"
           >
             <Trash2 size={16} />
@@ -623,7 +623,7 @@ const EventCard = ({ event, onEdit, onDelete }) => {
         </div>
       </div>
       
-      <div className="flex items-center text-sm text-gray-500 mt-3">
+      <div className="flex items-center text-sm text-primary dark:text-secondary mt-3">
         <CalendarIcon size={14} className="mr-1" />
         <span>{new Date(event.date).toLocaleDateString()}</span>
         <Clock size={14} className="ml-3 mr-1" />
@@ -631,14 +631,14 @@ const EventCard = ({ event, onEdit, onDelete }) => {
       </div>
       
       {event.location && (
-        <div className="flex items-center text-sm text-gray-500 mt-1">
+        <div className="flex items-center text-sm text-primary dark:text-secondary mt-1">
           <MapPin size={14} className="mr-1" />
           <span>{event.location}</span>
         </div>
       )}
       
       {event.participants && (
-        <div className="flex items-center text-sm text-gray-500 mt-1">
+        <div className="flex items-center text-sm text-primary dark:text-secondary mt-1">
           <Users size={14} className="mr-1" />
           <span>{event.participants}</span>
         </div>

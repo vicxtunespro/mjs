@@ -306,7 +306,7 @@ const LearnersTable = () => {
   };
 
   return (
-      <Card className='shadow-lg rounded-xl overflow-hidden' sx={{ border: '1px solid #e5e7eb' }}>
+      <Card className='bg-primary dark:bg-secondary shadow-lg rounded-xl overflow-hidden' sx={{ border: '1px solid #e5e7eb' }}>
         {/* Table Header */}
         <div className='px-4 pt-6'>
           <SectionHeader Icon={UserPlus} title="Student Management" subtitle="Manage student information effectively" />

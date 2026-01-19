@@ -88,10 +88,10 @@ const LearnersTable = () => {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-6 ${isFullScreen ? 'fixed inset-0 z-50 overflow-auto' : ''}`}>
+    <div className={`bg-primary dark:bg-secondary rounded-lg shadow-md p-6 ${isFullScreen ? 'fixed inset-0 z-50 overflow-auto' : ''}`}>
       {/* Table Header with Controls */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Learner Management</h2>
+        <h2 className="text-xl font-semibold text-secondary dark:text-primary">Learner Management</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => handleExport('csv')}
@@ -109,14 +109,14 @@ const LearnersTable = () => {
           </button>
           <button
             onClick={() => handleExport('pdf')}
-            className="flex items-center px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition"
+            className="flex items-center px-3 py-2 bg-red-100 text-cta rounded-md hover:bg-cta-low transition"
           >
             <Download size={16} className="mr-1" />
             PDF
           </button>
           <button
             onClick={toggleFullScreen}
-            className="flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-grey-200 transition"
+            className="flex items-center px-3 py-2 bg-primary dark:bg-secondary text-secondary  dark:text-primary rounded-md hover:bg-grey-200 transition"
           >
             <Maximize size={16} />
           </button>
@@ -126,37 +126,37 @@ const LearnersTable = () => {
       {/* Table Filters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Name</label>
           <input
             type="text"
             placeholder="Filter by name"
             onChange={(e) => handleFilter('name', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-primary-plus rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+          <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Grade</label>
           <input
             type="text"
             placeholder="Filter by grade"
             onChange={(e) => handleFilter('grade', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-primary-plus rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+          <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Class</label>
           <input
             type="text"
             placeholder="Filter by class"
             onChange={(e) => handleFilter('class', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-primary-plus rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">Status</label>
           <select
             onChange={(e) => handleFilter('status', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-primary-plus rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Statuses</option>
             <option value="Active">Active</option>
@@ -167,11 +167,11 @@ const LearnersTable = () => {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-primary">
+          <thead className="bg-primary dark:bg-secondary">
             <tr>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('name')}
               >
                 <div className="flex items-center">
@@ -186,7 +186,7 @@ const LearnersTable = () => {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('grade')}
               >
                 <div className="flex items-center">
@@ -201,7 +201,7 @@ const LearnersTable = () => {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('class')}
               >
                 <div className="flex items-center">
@@ -216,7 +216,7 @@ const LearnersTable = () => {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('enrollmentDate')}
               >
                 <div className="flex items-center">
@@ -231,7 +231,7 @@ const LearnersTable = () => {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center">
@@ -246,7 +246,7 @@ const LearnersTable = () => {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="px-6 py-3 text-left text-xs font-medium text-primary dark:text-secondary uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('gpa')}
               >
                 <div className="flex items-center">
@@ -262,14 +262,14 @@ const LearnersTable = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-primary dark:bg-secondary divide-y divide-primary">
             {currentItems.length > 0 ? (
               currentItems.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.grade}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.class}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.enrollmentDate}</td>
+                <tr key={item.id} className="hover:bg-primary dark:bg-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary dark:text-primary">{item.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">{item.grade}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">{item.class}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">{item.enrollmentDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                       item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
@@ -277,12 +277,12 @@ const LearnersTable = () => {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.gpa}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">{item.gpa}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                <td colSpan="6" className="px-6 py-4 text-center text-sm text-primary">
                   No learners found matching your filters.
                 </td>
               </tr>
@@ -294,7 +294,7 @@ const LearnersTable = () => {
       {/* Pagination */}
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center">
-          <span className="text-sm text-gray-700 mr-4">
+          <span className="text-sm text-secondary  dark:text-primary mr-4">
             Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{' '}
             <span className="font-medium">
               {indexOfLastItem > processedData.length ? processedData.length : indexOfLastItem}
@@ -304,7 +304,7 @@ const LearnersTable = () => {
           <select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+            className="px-2 py-1 border border-primary-plus rounded-md text-sm"
           >
             <option value="5">5 per page</option>
             <option value="10">10 per page</option>
@@ -316,14 +316,14 @@ const LearnersTable = () => {
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className={`px-3 py-1 rounded-md text-sm ${currentPage === 1 ? 'bg-gray-100 text-gray-400' : 'bg-grey-200 text-gray-700 hover:bg-gray-300'}`}
+            className={`px-3 py-1 rounded-md text-sm ${currentPage === 1 ? 'bg-primary dark:bg-secondary text-secondary-minus' : 'bg-grey-200 text-secondary  dark:text-primary hover:bg-primary-hover'}`}
           >
             Previous
           </button>
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded-md text-sm ${currentPage === totalPages ? 'bg-gray-100 text-gray-400' : 'bg-grey-200 text-gray-700 hover:bg-gray-300'}`}
+            className={`px-3 py-1 rounded-md text-sm ${currentPage === totalPages ? 'bg-primary dark:bg-secondary text-secondary-minus' : 'bg-grey-200 text-secondary  dark:text-primary hover:bg-primary-hover'}`}
           >
             Next
           </button>

@@ -306,17 +306,17 @@ export default function InterviewUpdatePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary to-primary flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-red-700 mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading interview data...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-cta mx-auto mb-4" />
+          <p className="text-secondary  dark:text-primary font-medium">Loading interview data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary to-primary">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Security Alert */}
         <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -332,19 +332,19 @@ export default function InterviewUpdatePage() {
         </div>
 
         {/* Enable Editing Toggle */}
-        <div className="mb-6 bg-white rounded-lg shadow-md border border-gray-200 p-4">
+        <div className="mb-6 bg-primary dark:bg-secondary rounded-lg shadow-md border border-primary p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {editingEnabled ? (
                 <Unlock className="w-5 h-5 text-green-600" />
               ) : (
-                <Lock className="w-5 h-5 text-gray-400" />
+                <Lock className="w-5 h-5 text-secondary-minus" />
               )}
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-secondary dark:text-primary">
                   {editingEnabled ? 'Editing Enabled' : 'Editing Disabled'}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-secondary dark:text-primary">
                   {editingEnabled 
                     ? 'You can now modify the interview data' 
                     : 'Enable editing to make changes to this interview'}
@@ -362,8 +362,8 @@ export default function InterviewUpdatePage() {
               }}
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 editingEnabled
-                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  : 'bg-red-700 text-white hover:bg-red-800'
+                  ? 'bg-primary dark:bg-secondary text-secondary  dark:text-primary hover:bg-primary-hover'
+                  : 'bg-cta text-primary dark:text-secondary hover:bg-cta'
               }`}
             >
               {editingEnabled ? 'Disable Editing' : 'Enable Editing'}
@@ -383,28 +383,28 @@ export default function InterviewUpdatePage() {
         )}
 
         {submitStatus === 'error' && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <div className="mb-6 bg-cta-low border border-cta-low rounded-lg p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-cta flex-shrink-0" />
             <div>
-              <p className="text-red-800 font-medium">Failed to update interview</p>
-              <p className="text-red-700 text-sm">{errorMessage}</p>
+              <p className="text-cta font-medium">Failed to update interview</p>
+              <p className="text-cta text-sm">{errorMessage}</p>
             </div>
           </div>
         )}
 
         {/* Form Card */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div className="bg-primary dark:bg-secondary rounded-xl shadow-lg border border-primary">
           {/* Personal Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <UserPlus className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
+              <UserPlus className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Personal Information</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  First Name <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
@@ -412,14 +412,14 @@ export default function InterviewUpdatePage() {
                   value={interviewData.firstName}
                   onChange={handleTextChange}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                   placeholder="John"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Last Name <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
@@ -427,13 +427,13 @@ export default function InterviewUpdatePage() {
                   value={interviewData.lastName}
                   onChange={handleTextChange}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                   placeholder="Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Other Names
                 </label>
                 <input
@@ -442,7 +442,7 @@ export default function InterviewUpdatePage() {
                   value={interviewData.otherNames || ''}
                   onChange={handleTextChange}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                   placeholder="Optional"
                 />
               </div>
@@ -450,15 +450,15 @@ export default function InterviewUpdatePage() {
           </div>
 
           {/* School Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <School className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">School Background</h2>
+              <School className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">School Background</h2>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Previous School <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                Previous School <span className="text-cta">*</span>
               </label>
               <input
                 type="text"
@@ -466,30 +466,30 @@ export default function InterviewUpdatePage() {
                 value={interviewData.previousSchool}
                 onChange={handleTextChange}
                 disabled={!editingEnabled}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                 placeholder="Enter previous school name"
               />
             </div>
           </div>
 
           {/* Academic Information Section */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8 border-b border-primary">
             <div className="flex items-center gap-2 mb-6">
-              <BookOpen className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Academic Details</h2>
+              <BookOpen className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Academic Details</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Education Level <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Education Level <span className="text-cta">*</span>
                 </label>
                 <select
                   name="section"
                   value={interviewData.section}
                   onChange={handleSelectChange}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                 >
                   <option value="">-- Select Level --</option>
                   <option value="Pre-Primary">Pre-Primary</option>
@@ -498,15 +498,15 @@ export default function InterviewUpdatePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Class <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Class <span className="text-cta">*</span>
                 </label>
                 <select
                   name="class"
                   value={interviewData.class}
                   onChange={handleSelectChange}
                   disabled={!editingEnabled || !interviewData.section}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                 >
                   <option value="">-- Select Class --</option>
                   {availableClasses.map((className) => (
@@ -518,15 +518,15 @@ export default function InterviewUpdatePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Subject <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Subject <span className="text-cta">*</span>
                 </label>
                 <select
                   name="subject"
                   value={interviewData.subject}
                   onChange={handleSelectChange}
                   disabled={!editingEnabled || !interviewData.section}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                 >
                   <option value="">-- Select Subject --</option>
                   {availableSubjects.map((subject) => (
@@ -542,14 +542,14 @@ export default function InterviewUpdatePage() {
           {/* Interview Details Section */}
           <div className="p-8">
             <div className="flex items-center gap-2 mb-6">
-              <CheckCircle2 className="w-5 h-5 text-red-700" />
-              <h2 className="text-lg font-semibold text-gray-900">Interview Details</h2>
+              <CheckCircle2 className="w-5 h-5 text-cta" />
+              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Interview Details</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Score (0-100) <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Score (0-100) <span className="text-cta">*</span>
                 </label>
                 <input
                   type="number"
@@ -566,21 +566,21 @@ export default function InterviewUpdatePage() {
                     }));
                   }}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                   placeholder="Enter score"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                   Status (Auto-calculated)
                 </label>
                 <div className={`w-full px-3 py-2 border rounded-lg font-medium ${
                   interviewData.status === 'Passed' 
                     ? 'bg-green-50 border-green-300 text-green-700' 
                     : interviewData.status === 'Failed'
-                    ? 'bg-red-50 border-red-300 text-red-700'
-                    : 'bg-gray-50 border-gray-300 text-gray-700'
+                    ? 'bg-cta-low border-cta-midtone text-cta'
+                    : 'bg-primary dark:bg-secondary border-primary-plus text-secondary dark:text-primary'
                 }`}>
                   {interviewData.status}
                   {interviewData.score !== undefined && (
@@ -592,8 +592,8 @@ export default function InterviewUpdatePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Issued By <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
+                  Issued By <span className="text-cta">*</span>
                 </label>
                 <input
                   type="text"
@@ -601,14 +601,14 @@ export default function InterviewUpdatePage() {
                   value={interviewData.issuedBy}
                   onChange={handleTextChange}
                   disabled={!editingEnabled}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition disabled:bg-gray-50 disabled:text-gray-600"
+                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                   placeholder="Head Teacher"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
                 Feedback (Optional)
               </label>
               <textarea
@@ -617,18 +617,18 @@ export default function InterviewUpdatePage() {
                 onChange={handleTextChange}
                 disabled={!editingEnabled}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none disabled:bg-gray-50 disabled:text-gray-600"
+                className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition resize-none disabled:bg-primary dark:bg-secondary disabled:text-secondary dark:text-primary"
                 placeholder="Enter any feedback or notes about the interview..."
               />
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="px-8 py-6 bg-gray-50 rounded-b-xl flex justify-end gap-3">
+          <div className="px-8 py-6 bg-primary dark:bg-secondary rounded-b-xl flex justify-end gap-3">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium disabled:opacity-50"
+              className="px-6 py-2.5 border border-primary-plus text-secondary  dark:text-primary rounded-lg hover:bg-primary dark:bg-secondary transition font-medium disabled:opacity-50"
               disabled={isSubmitting || !editingEnabled}
             >
               Cancel
@@ -637,7 +637,7 @@ export default function InterviewUpdatePage() {
               type="button"
               onClick={handleInterviewUpdate}
               disabled={isSubmitting || !editingEnabled}
-              className="px-6 py-2.5 bg-red-700 text-white rounded-lg hover:bg-red-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2.5 bg-cta text-primary dark:text-secondary rounded-lg hover:bg-cta transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -655,8 +655,8 @@ export default function InterviewUpdatePage() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>All fields marked with <span className="text-red-500">*</span> are required</p>
+        <div className="mt-6 text-center text-sm text-primary">
+          <p>All fields marked with <span className="text-cta">*</span> are required</p>
           <p className="mt-1">Status is automatically calculated: Passed (≥50) or Failed (&lt;50)</p>
         </div>
       </div>
