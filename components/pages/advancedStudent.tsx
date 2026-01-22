@@ -266,6 +266,14 @@ interface ColumnVisibility {
   createdAt: boolean;
 }
 
+interface QuickActionsState {
+  showInactive: boolean;
+  showMedical: boolean;
+  groupByClass: boolean;
+  autoRefresh: boolean;
+};
+
+
 // Sample data with enhanced fields
 const studentsData: Student[] = [
   {
@@ -375,7 +383,7 @@ const EnhancedStudentTable = () => {
     contact: false,
     createdAt: false,
   });
-  const [quickActions, setQuickActions] = useState({
+  const [quickActions, setQuickActions] = useState<QuickActionsState>({
     showInactive: false,
     showMedical: true,
     groupByClass: false,
@@ -2006,7 +2014,7 @@ const FilterPanel = ({
             <div className="flex items-center space-x-2">
               <Switch
                 checked={quickActions.showInactive}
-                onCheckedChange={(checked) => setQuickActions(prev => ({ ...prev, showInactive: checked }))}
+                onCheckedChange={(checked) => setQuickActions((prev: typeof quickActions) => ({ ...prev, showInactive: checked }))}
                 id="show-inactive"
               />
               <Label htmlFor="show-inactive" className="text-sm">Show Inactive</Label>
@@ -2014,7 +2022,7 @@ const FilterPanel = ({
             <div className="flex items-center space-x-2">
               <Switch
                 checked={quickActions.autoRefresh}
-                onCheckedChange={(checked) => setQuickActions(prev => ({ ...prev, autoRefresh: checked }))}
+                onCheckedChange={(checked) => setQuickActions((prev: typeof quickActions) => ({ ...prev, autoRefresh: checked }))}
                 id="auto-refresh"
               />
               <Label htmlFor="auto-refresh" className="text-sm">Auto Refresh</Label>

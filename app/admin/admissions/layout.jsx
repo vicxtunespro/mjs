@@ -15,9 +15,9 @@ export default function StudentAdmissionLayout({ children }) {
     return (
         <div className="bg-primary dark:bg-secondary overflow-hidden py-2">
             <div className="max-w-7xl mx-auto">
-                {/* <div className="flex flex-col md:items-center md:flex-row justify-between mb-6">
+                <div className="flex flex-col md:items-center md:flex-row justify-between mb-6">
                     <div className='px-4 pt-4'>
-                        <SectionHeader Icon={UserPlus} title="Student Management" subtitle="All student data in one place" />
+                        <SectionHeader Icon={UserPlus} title="Admission Management" subtitle="Manage student admissions efficiently" />
                     </div>
                     <div className='flex gap-2 justify-center  md:justify-end mx-4 md:w-[20rem]'>
                         <button
@@ -25,7 +25,7 @@ export default function StudentAdmissionLayout({ children }) {
                             className="w-full align-right flex items-center justify-center bg-secondary text-primary dark:text-secondary px-4 py-2 rounded-lg hover:bg-secondary transition"
                         >
                             <BookAlert size={16} className="mr-2" />
-                            <p className='text-xs md:text-md'>All Students</p>
+                            <p className='text-xs md:text-md'>Issue Interview</p>
                         </button>
                         <button
                             onClick={() => handleNewStudent()}
@@ -35,7 +35,7 @@ export default function StudentAdmissionLayout({ children }) {
                             <p className='text-xs md:text-md'>New Candidate</p>
                         </button>
                     </div>
-                </div> */}
+                </div>
                 { children }
             </div>
         </div>

@@ -85,6 +85,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import SectionHeader from '@/components/ui/sectionHeader';
+import { toSentenceCase } from '@/lib/utils';
 
 // Types
 interface Student {
@@ -186,7 +188,8 @@ const StudentProfilePage = () => {
       if (!studentResponse.ok) {
         throw new Error('Failed to fetch student data');
       }
-      const studentData = await studentResponse.json();
+      const studentResults = await studentResponse.json();
+      const studentData = studentResults.data
       setStudent(studentData);
 
       // Fetch guardian data if guardian IDs exist
@@ -385,21 +388,18 @@ const StudentProfilePage = () => {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => router.push('/students')}
-            className="h-10 w-10"
+            onClick={() => router.push('/admin/students')}
+            className="h-10 w-10 text-secondary-minus"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Student Profile</h1>
-            <p className="text-gray-500">{student?.registration_id}</p>
-          </div>
+          <SectionHeader title={"Student Profile"} subtitle={`All information about ${toSentenceCase(student?.name?.first_name)}`} Icon={User}/>
         </div>
         
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className='bg-secondary'>
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
@@ -420,8 +420,8 @@ const StudentProfilePage = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button>
-            <Edit className="h-4 w-4 mr-2" />
+          <Button className='bg-cta hover:bg-primary-plus hover:text-secondary'>
+            <Edit className="h-4 w-4 mr-2"/>
             Edit Profile
           </Button>
         </div>
@@ -437,7 +437,7 @@ const StudentProfilePage = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                   <AvatarImage src={student?.photo} alt={`${student?.name?.first_name} ${student?.name?.last_name}`} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100 text-2xl">
+                  <AvatarFallback className="bg-gradient-to-br from-primary/10 to-cta/10 text-2xl">
                     {student?.name?.first_name?.[0]}{student?.name?.last_name?.[0]}
                   </AvatarFallback>
                 </Avatar>
@@ -445,7 +445,7 @@ const StudentProfilePage = () => {
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">
+                      <h2 className="text-xl font-medium text-gray-900">
                         {student?.name?.first_name} {student?.name?.last_name}
                         {student?.name?.other_names && ` (${student?.name?.other_names})`}
                       </h2>
@@ -462,13 +462,13 @@ const StudentProfilePage = () => {
                       </div>
                     </div>
                     
-                    <div className="text-right">
+                    <div>
                       <div className="text-sm text-gray-500">Student ID</div>
-                      <div className="font-mono font-bold text-gray-900">{student?.registration_id}</div>
+                      <div className="font-mono font-bold text-secondary">{student?.registration_id}</div>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                     <div>
                       <div className="text-sm text-gray-500">Age</div>
                       <div className="font-semibold">{calculateAge(student?.date_of_birth)} years</div>
@@ -493,9 +493,9 @@ const StudentProfilePage = () => {
 
           {/* Tabs Section */}
           <Card>
-            <CardHeader>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <CardHeader>
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-4">
                   <TabsTrigger value="overview" className="flex items-center gap-2">
                     <Eye className="h-4 w-4" />
                     Overview
@@ -513,390 +513,390 @@ const StudentProfilePage = () => {
                     Medical
                   </TabsTrigger>
                 </TabsList>
-              </Tabs>
-            </CardHeader>
-            
-            <CardContent>
-              <TabsContent value="overview" className="space-y-6">
-                {/* Personal Information */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Personal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div>
-                        <div className="text-sm text-gray-500">Full Name</div>
-                        <div className="font-medium">{student?.name?.first_name} {student?.name?.last_name} {student?.name?.other_names || ''}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Date of Birth</div>
-                        <div className="font-medium flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          {formatDate(student?.date_of_birth)}
+              </CardHeader>
+              
+              <CardContent>
+                <TabsContent value="overview" className="space-y-6">
+                  {/* Personal Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Personal Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div>
+                          <div className="text-sm text-gray-500">Full Name</div>
+                          <div className="font-medium">{student?.name?.first_name} {student?.name?.last_name} {student?.name?.other_names || ''}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Date of Birth</div>
+                          <div className="font-medium flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            {formatDate(student?.date_of_birth)}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Religion</div>
+                          <div className="font-medium flex items-center gap-2">
+                            {student?.religion === 'Islam' ? (
+                              <Moon className="h-4 w-4" />
+                            ) : (
+                              <Cross className="h-4 w-4" />
+                            )}
+                            {student?.religion}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Religion</div>
-                        <div className="font-medium flex items-center gap-2">
-                          {student?.religion === 'Islam' ? (
-                            <Moon className="h-4 w-4" />
-                          ) : (
-                            <Cross className="h-4 w-4" />
-                          )}
-                          {student?.religion}
+                      <div className="space-y-3">
+                        <div>
+                          <div className="text-sm text-gray-500">Residence</div>
+                          <div className="font-medium flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            {student?.residence ? (
+                              `${student?.residence.village}, ${student?.residence.district}, ${student?.residence.region}`
+                            ) : (
+                              'Not specified'
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="text-sm text-gray-500">Residence</div>
-                        <div className="font-medium flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          {student?.residence ? (
-                            `${student?.residence.village}, ${student?.residence.district}, ${student?.residence.region}`
-                          ) : (
-                            'Not specified'
-                          )}
+                        <div>
+                          <div className="text-sm text-gray-500">Previous School</div>
+                          <div className="font-medium flex items-center gap-2">
+                            <School className="h-4 w-4" />
+                            {student?.previous_school || 'Not specified'}
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Previous School</div>
-                        <div className="font-medium flex items-center gap-2">
-                          <School className="h-4 w-4" />
-                          {student?.previous_school || 'Not specified'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Admission Date</div>
-                        <div className="font-medium flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          {student?.admission_date ? formatDate(student?.admission_date) : 'Not specified'}
+                        <div>
+                          <div className="text-sm text-gray-500">Admission Date</div>
+                          <div className="font-medium flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            {student?.admission_date ? formatDate(student?.admission_date) : 'Not specified'}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                {/* Performance Stats */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Performance Overview
-                  </h3>
+                  {/* Performance Stats */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5" />
+                      Performance Overview
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <div className="text-sm text-gray-500">Attendance Rate</div>
+                              <div className={`text-2xl font-bold ${getAttendanceColor(student?.attendance_rate || 0)}`}>
+                                {student?.attendance_rate || 0}%
+                              </div>
+                            </div>
+                            <div className={`p-3 rounded-full ${getAttendanceColor(student?.attendance_rate || 0)}`}>
+                              <Clock className="h-6 w-6" />
+                            </div>
+                          </div>
+                          <Progress value={student?.attendance_rate || 0} className="h-2" />
+                        </CardContent>
+                      </Card>
+                      
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <div className="text-sm text-gray-500">Performance Score</div>
+                              <div className={`text-2xl font-bold ${getPerformanceColor(student?.performance_score || 0)}`}>
+                                {student?.performance_score || 0}%
+                              </div>
+                            </div>
+                            <div className={`p-3 rounded-full ${getPerformanceColor(student?.performance_score || 0)}`}>
+                              <Award className="h-6 w-6" />
+                            </div>
+                          </div>
+                          <Progress value={student?.performance_score || 0} className="h-2" />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="academic" className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <div className="text-sm text-gray-500">Attendance Rate</div>
-                            <div className={`text-2xl font-bold ${getAttendanceColor(student?.attendance_rate || 0)}`}>
-                              {student?.attendance_rate || 0}%
-                            </div>
-                          </div>
-                          <div className={`p-3 rounded-full ${getAttendanceColor(student?.attendance_rate || 0)}`}>
-                            <Clock className="h-6 w-6" />
-                          </div>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <BookOpen className="h-5 w-5" />
+                          Academic Details
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <div className="text-sm text-gray-500">Class</div>
+                          <div className="font-semibold text-lg">{student?.class?.name}</div>
                         </div>
-                        <Progress value={student?.attendance_rate || 0} className="h-2" />
+                        <div>
+                          <div className="text-sm text-gray-500">Stream</div>
+                          <div className="font-semibold">{student?.class?.stream || 'Not assigned'}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Section</div>
+                          <div className="font-semibold">{student?.section}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">House</div>
+                          <div className="font-semibold">{student?.house || 'Not assigned'}</div>
+                        </div>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <div className="text-sm text-gray-500">Performance Score</div>
-                            <div className={`text-2xl font-bold ${getPerformanceColor(student?.performance_score || 0)}`}>
-                              {student?.performance_score || 0}%
-                            </div>
-                          </div>
-                          <div className={`p-3 rounded-full ${getPerformanceColor(student?.performance_score || 0)}`}>
-                            <Award className="h-6 w-6" />
-                          </div>
-                        </div>
-                        <Progress value={student?.performance_score || 0} className="h-2" />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="academic" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <BookOpen className="h-5 w-5" />
-                        Academic Details
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <div className="text-sm text-gray-500">Class</div>
-                        <div className="font-semibold text-lg">{student?.class?.name}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Stream</div>
-                        <div className="font-semibold">{student?.class?.stream || 'Not assigned'}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Section</div>
-                        <div className="font-semibold">{student?.section}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">House</div>
-                        <div className="font-semibold">{student?.house || 'Not assigned'}</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Award className="h-5 w-5" />
-                        Activities & Clubs
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {student?.club && student?.club.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {student?.club.map((club, index) => (
-                            <Badge key={index} variant="outline" className="px-3 py-1">
-                              {club}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 text-center py-4">No club activities</div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      Academic Performance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Overall Performance</span>
-                          <span className={`font-bold ${getPerformanceColor(student?.performance_score || 0)}`}>
-                            {student?.performance_score || 0}%
-                          </span>
-                        </div>
-                        <Progress value={student?.performance_score || 0} className="h-2" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Attendance</span>
-                          <span className={`font-bold ${getAttendanceColor(student?.attendance_rate || 0)}`}>
-                            {student?.attendance_rate || 0}%
-                          </span>
-                        </div>
-                        <Progress value={student?.attendance_rate || 0} className="h-2" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="guardians" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {guardians.length > 0 ? (
-                    guardians.map((guardian, index) => (
-                      <Card key={guardian._id}>
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="flex items-center gap-2">
-                              <Shield className="h-5 w-5" />
-                              Guardian {index + 1}
-                            </CardTitle>
-                            <Badge variant="outline">
-                              {guardian.relationship}
-                            </Badge>
-                          </div>
-                          <CardDescription>
-                            {guardian.name.first_name} {guardian.name.last_name}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <div className="text-sm text-gray-500">Full Name</div>
-                            <div className="font-semibold">
-                              {guardian.name.first_name} {guardian.name.last_name} {guardian.name.other_names || ''}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-sm text-gray-500">Contact Information</div>
-                            <div className="space-y-2 mt-1">
-                              <div className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 text-gray-400" />
-                                <span className="font-medium">{guardian.contact.phone}</span>
-                              </div>
-                              {guardian.contact.email && (
-                                <div className="flex items-center gap-2">
-                                  <Mail className="h-4 w-4 text-gray-400" />
-                                  <span className="font-medium">{guardian.contact.email}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          {guardian.occupation && (
-                            <div>
-                              <div className="text-sm text-gray-500">Occupation</div>
-                              <div className="font-semibold">{guardian.occupation}</div>
-                            </div>
-                          )}
-                          {guardian.workplace && (
-                            <div>
-                              <div className="text-sm text-gray-500">Workplace</div>
-                              <div className="font-semibold">{guardian.workplace}</div>
-                            </div>
-                          )}
-                        </CardContent>
-                        <CardFooter>
-                          <Button variant="outline" className="w-full">
-                            <Mail className="h-4 w-4 mr-2" />
-                            Contact Guardian
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    ))
-                  ) : student?.guardian1 || student?.guardian2 ? (
-                    <Card className="md:col-span-2">
-                      <CardContent className="pt-6">
-                        <div className="text-center py-8">
-                          <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                          <h3 className="text-lg font-semibold text-gray-700 mb-2">Guardian Information</h3>
-                          <p className="text-gray-500 mb-4">
-                            Guardian records exist but detailed information couldn't be loaded.
-                          </p>
-                          <div className="space-y-2 text-sm">
-                            {student?.guardian1 && (
-                              <div>
-                                <span className="font-medium">Primary Guardian:</span>{' '}
-                                {student?.guardian1.relationship}
-                              </div>
-                            )}
-                            {student?.guardian2 && student?.guardian2.relationship && (
-                              <div>
-                                <span className="font-medium">Secondary Guardian:</span>{' '}
-                                {student?.guardian2.relationship}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card className="md:col-span-2">
-                      <CardContent className="pt-6">
-                        <div className="text-center py-8">
-                          <UserPlus className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                          <h3 className="text-lg font-semibold text-gray-700 mb-2">No Guardians Added</h3>
-                          <p className="text-gray-500 mb-4">
-                            This student doesn't have any guardians registered in the system.
-                          </p>
-                          <Button>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Add Guardian
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="medical" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <HeartPulse className="h-5 w-5" />
-                        Medical Information
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <div className="text-sm text-gray-500">Blood Group</div>
-                        <div className="font-semibold">{student?.blood_group || 'Not specified'}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Allergies</div>
-                        {student?.allergies && student?.allergies.length > 0 && student?.allergies[0] !== 'None' ? (
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {student?.allergies.map((allergy, index) => (
-                              <Badge key={index} variant="destructive">
-                                {allergy}
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Award className="h-5 w-5" />
+                          Activities & Clubs
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {student?.club && student?.club.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {student?.club.map((club, index) => (
+                              <Badge key={index} variant="outline" className="px-3 py-1">
+                                {club}
                               </Badge>
                             ))}
                           </div>
                         ) : (
-                          <div className="font-semibold text-green-600">No known allergies</div>
+                          <div className="text-gray-500 text-center py-4">No club activities</div>
                         )}
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-500">Emergency Contact</div>
-                        <div className="font-semibold">{student?.emergency_contact || 'Not specified'}</div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
 
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Medical Notes
+                        <TrendingUp className="h-5 w-5" />
+                        Academic Performance
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {student?.medical_notes ? (
+                      <div className="space-y-6">
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Overall Performance</span>
+                            <span className={`font-bold ${getPerformanceColor(student?.performance_score || 0)}`}>
+                              {student?.performance_score || 0}%
+                            </span>
+                          </div>
+                          <Progress value={student?.performance_score || 0} className="h-2" />
+                        </div>
+                        
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Attendance</span>
+                            <span className={`font-bold ${getAttendanceColor(student?.attendance_rate || 0)}`}>
+                              {student?.attendance_rate || 0}%
+                            </span>
+                          </div>
+                          <Progress value={student?.attendance_rate || 0} className="h-2" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="guardians" className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {guardians.length > 0 ? (
+                      guardians.map((guardian, index) => (
+                        <Card key={guardian._id}>
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="flex items-center gap-2">
+                                <Shield className="h-5 w-5" />
+                                Guardian {index + 1}
+                              </CardTitle>
+                              <Badge variant="outline">
+                                {guardian.relationship}
+                              </Badge>
+                            </div>
+                            <CardDescription>
+                              {guardian.name.first_name} {guardian.name.last_name}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div>
+                              <div className="text-sm text-gray-500">Full Name</div>
+                              <div className="font-semibold">
+                                {guardian.name.first_name} {guardian.name.last_name} {guardian.name.other_names || ''}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-500">Contact Information</div>
+                              <div className="space-y-2 mt-1">
+                                <div className="flex items-center gap-2">
+                                  <Phone className="h-4 w-4 text-gray-400" />
+                                  <span className="font-medium">{guardian.contact.phone}</span>
+                                </div>
+                                {guardian.contact.email && (
+                                  <div className="flex items-center gap-2">
+                                    <Mail className="h-4 w-4 text-gray-400" />
+                                    <span className="font-medium">{guardian.contact.email}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {guardian.occupation && (
+                              <div>
+                                <div className="text-sm text-gray-500">Occupation</div>
+                                <div className="font-semibold">{guardian.occupation}</div>
+                              </div>
+                            )}
+                            {guardian.workplace && (
+                              <div>
+                                <div className="text-sm text-gray-500">Workplace</div>
+                                <div className="font-semibold">{guardian.workplace}</div>
+                              </div>
+                            )}
+                          </CardContent>
+                          <CardFooter>
+                            <Button variant="outline" className="w-full">
+                              <Mail className="h-4 w-4 mr-2" />
+                              Contact Guardian
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      ))
+                    ) : student?.guardian1 || student?.guardian2 ? (
+                      <Card className="md:col-span-2">
+                        <CardContent className="pt-6">
+                          <div className="text-center py-8">
+                            <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">Guardian Information</h3>
+                            <p className="text-gray-500 mb-4">
+                              Guardian records exist but detailed information couldn't be loaded.
+                            </p>
+                            <div className="space-y-2 text-sm">
+                              {student?.guardian1 && (
+                                <div>
+                                  <span className="font-medium">Primary Guardian:</span>{' '}
+                                  {student?.guardian1.relationship}
+                                </div>
+                              )}
+                              {student?.guardian2 && student?.guardian2.relationship && (
+                                <div>
+                                  <span className="font-medium">Secondary Guardian:</span>{' '}
+                                  {student?.guardian2.relationship}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <Card className="md:col-span-2">
+                        <CardContent className="pt-6">
+                          <div className="text-center py-8">
+                            <UserPlus className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Guardians Added</h3>
+                            <p className="text-gray-500 mb-4">
+                              This student doesn't have any guardians registered in the system.
+                            </p>
+                            <Button>
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Add Guardian
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="medical" className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <HeartPulse className="h-5 w-5" />
+                          Medical Information
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <div className="text-sm text-gray-500">Blood Group</div>
+                          <div className="font-semibold">{student?.blood_group || 'Not specified'}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Allergies</div>
+                          {student?.allergies && student?.allergies.length > 0 && student?.allergies[0] !== 'None' ? (
+                            <div className="flex flex-wrap gap-2 mt-1">
+                              {student?.allergies.map((allergy, index) => (
+                                <Badge key={index} variant="destructive">
+                                  {allergy}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="font-semibold text-green-600">No known allergies</div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Emergency Contact</div>
+                          <div className="font-semibold">{student?.emergency_contact || 'Not specified'}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <FileText className="h-5 w-5" />
+                          Medical Notes
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {student?.medical_notes ? (
+                          <div className="prose prose-sm max-w-none">
+                            <p className="text-gray-700 whitespace-pre-line">{student?.medical_notes}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                            <p className="text-gray-500">No medical notes recorded</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Activity className="h-5 w-5" />
+                        Additional Notes
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {student?.notes ? (
                         <div className="prose prose-sm max-w-none">
-                          <p className="text-gray-700 whitespace-pre-line">{student?.medical_notes}</p>
+                          <p className="text-gray-700 whitespace-pre-line">{student?.notes}</p>
                         </div>
                       ) : (
                         <div className="text-center py-8">
-                          <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                          <p className="text-gray-500">No medical notes recorded</p>
+                          <BookMarked className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                          <p className="text-gray-500">No additional notes</p>
                         </div>
                       )}
                     </CardContent>
                   </Card>
-                </div>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Activity className="h-5 w-5" />
-                      Additional Notes
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {student?.notes ? (
-                      <div className="prose prose-sm max-w-none">
-                        <p className="text-gray-700 whitespace-pre-line">{student?.notes}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <BookMarked className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                        <p className="text-gray-500">No additional notes</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </CardContent>
+                </TabsContent>
+              </CardContent>
+            </Tabs>
           </Card>
         </div>
 
