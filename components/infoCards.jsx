@@ -54,7 +54,7 @@ const SampleData = [
 
 export default function InfoCardArea() {
   return (
-    <div className='w-full p-8 bg-background-light h-fit py-16 text-secondary dark:text-primary'>
+    <div className='w-full p-8 bg-background-light dark:bg-background-dark h-fit py-16 text-secondary dark:text-primary'>
 
         <div className='w-full grid grid-cols-6 md:grid-cols-12 gap-4'>
             {
@@ -70,15 +70,21 @@ export default function InfoCardArea() {
 const InfoCard = ({id, count, title, filters, icon}) => {
     const [activeFilter, setActiveFilter] = useState('all');
     return (
-        <div className='col-span-6 md:col-span-3 bg-primary dark:bg-secondary p-4 rounded-lg shadow-md md:min-w-72'>
+        <div className='
+          col-span-6 md:col-span-3
+          bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus
+          p-4 rounded-lg shadow-md md:min-w-72'
+        >
             <a href={`/admin/${title.toLowerCase().replace(/ /g, '-')}`}>
               <div className='flex items-center justify-between'>
                   <div className='leading-tight mb-4 flex flex-col items-start'>
                       <p className='text-4xl font-semibold text-secondary dark:text-primary'>{`${count}`}</p>
-                      <p className='text-secondary dark:text-primary'>{`${title?.toUpperCase()}`}</p>
+                      <p className='text-secondary dark:text-primary-plus'>{`${title?.toUpperCase()}`}</p>
                   </div>
                   <div className='leading-tight mb-4 flex flex-col items-center'>
-                      <span className='bg-secondary rounded-full p-4'>
+                      <span className='bg-secondary dark:bg-primary-plus rounded-full p-4'>
                           {icon}
                       </span>
                   </div>
@@ -100,7 +106,7 @@ const FilterBtn = ({ id, title, activeFilter, setActiveFilter }) => {
         console.log(`Filter set to: ${id}`);
     };
     return (
-        <div onClick={handleClick} className={`scale-90 cursor-pointer py-1 px-2 rounded-md ${isActive ? 'bg-cta text-primary' : ''}`}>
+        <div onClick={handleClick} className={`scale-90 bg-background-light dark:bg-secondary-minus cursor-pointer py-1 px-2 rounded-md ${isActive ? 'bg-cta text-primary' : ''}`}>
             {title}
         </div>
     );

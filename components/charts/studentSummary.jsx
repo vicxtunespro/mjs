@@ -36,7 +36,7 @@ const StudentSummaries = ({ data }) => {
           backgroundColor: ['#b91c1c', '#374151', '#991b1b'],
           hoverBackgroundColor: ['#dc2626', '#4b5563', '#b91c1c'],
           borderColor: '#ffffff',
-          borderWidth: 2,
+          borderWidth: 0.5,
         }],
       },
       section: {
@@ -46,7 +46,7 @@ const StudentSummaries = ({ data }) => {
           backgroundColor: ['#b91c1c', '#374151'],
           hoverBackgroundColor: ['#dc2626', '#4b5563'],
           borderColor: '#ffffff',
-          borderWidth: 2,
+          borderWidth: 0.5,
         }],
       },
       level: {
@@ -56,7 +56,7 @@ const StudentSummaries = ({ data }) => {
           backgroundColor: '#b91c1c',
           hoverBackgroundColor: '#dc2626',
           borderColor: '#ffffff',
-          borderWidth: 1,
+          borderWidth: 0.5,
         }],
       },
     });
@@ -69,7 +69,7 @@ const StudentSummaries = ({ data }) => {
       legend: {
         position: 'top',
         labels: {
-          color: '#374151',
+          color: '#a8a3a3',
           font: {
             size: 14,
           },
@@ -96,7 +96,7 @@ const StudentSummaries = ({ data }) => {
     scales: {
       x: {
         ticks: {
-          color: '#374151',
+          color: '#a8a3a3',
           autoSkip: false,
           maxRotation: 45,
           minRotation: 45,
@@ -108,10 +108,10 @@ const StudentSummaries = ({ data }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          color: '#374151',
+          color: '#a8a3a3',
         },
         grid: {
-          color: '#e5e7eb',
+          color: '#a8a3a3',
         },
       },
     },
@@ -121,22 +121,28 @@ const StudentSummaries = ({ data }) => {
     <div className="container mx-auto p-4 bg-background-light dark:bg-background-dark">
       <div>
         <h1 className="text-2xl font-bold mt-4 text-secondary dark:text-primary">Student Summaries</h1>
-        <p className="text-sm font-light mb-8 text-secondary dark:text-primary">Visualize student data by gender, section, and level.</p>
+        <p className="text-sm font-light mb-8 text-secondary-midtone dark:text-primary-midtone">Visualize student data by gender, section, and level.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+        <div className="bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
           <h2 className="text-md font-medium mb-2 text-primary">Gender Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.gender} options={donutOptions} />
           </div>
         </div>
-        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+        <div className="bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
           <h2 className="text-md font-medium mb-2 text-primary">Section Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.section} options={donutOptions} />
           </div>
         </div>
-        <div className="bg-primary dark:bg-secondary p-4 rounded-lg shadow-md">
+        <div className="bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
           <h2 className="text-md font-medium mb-2 text-primary">Level Distribution</h2>
           <div className="h-64">
             <Bar data={chartData.level} options={barOptions} />

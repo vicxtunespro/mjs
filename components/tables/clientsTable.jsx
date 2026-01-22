@@ -306,12 +306,14 @@ const LearnersTable = () => {
   };
 
   return (
-      <Card className='bg-primary dark:bg-secondary shadow-lg rounded-xl overflow-hidden' sx={{ border: '1px solid #e5e7eb' }}>
+      <div className='bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus shadow-lg rounded-xl overflow-hidden' sx={{ border: '1px solid #e5e7eb' }}>
         {/* Table Header */}
         <div className='px-4 pt-6'>
           <SectionHeader Icon={UserPlus} title="Student Management" subtitle="Manage student information effectively" />
         </div>
-        <CardContent sx={{ backgroundColor: '#ffffff' }}>
+        <CardContent>
           
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             {/* Search Bar */}
@@ -323,7 +325,7 @@ const LearnersTable = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search size={20} color="#6b7280" />
+                    <Search size={20} color="#f7dfc4" />
                   </InputAdornment>
                 ),
                 sx: {
@@ -398,7 +400,7 @@ const LearnersTable = () => {
             </Box>
           ) : (
             <>
-              <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 2, border: 1, borderColor: '#e5e7eb' }}>
+              <TableContainer  component={Paper} elevation={0} sx={{ borderRadius: 2, border: 1, borderColor: '#e5e7eb'}}>
                 <Table>
                   <TableHead>
                     <TableRow className='bg-grey-200'>
@@ -607,7 +609,7 @@ const LearnersTable = () => {
             </>
           )}
         </CardContent>
-      </Card>
+      </div>
   );
 };
 

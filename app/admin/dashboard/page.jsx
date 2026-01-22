@@ -9,7 +9,9 @@ import AdmissionSystem from '@/components/admissions';
 
 export default function Dashboard() {
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col bg-gradient-to-br from-primary to-primary-midtone
+          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+          border border-primary dark:border-secondary-minus'>
       <InfoCardArea />
       <StudentSummary data={studentsData} />
       <LearnersTable />

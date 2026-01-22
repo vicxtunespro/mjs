@@ -1,26 +1,124 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-/* Color Palette */
+@custom-variant dark (&:is(.dark *));
 
-@theme{
-  --color-*: initial;
+/* Your custom color palette */
+:root {
+  /* Color definitions */
   --color-primary: #f9fafb;
   --color-primary-plus: #d1d5db;
   --color-secondary: #4b5563;
   --color-background-dark: #374151;
   --color-background-light: #e5e7eb;
-  --color-secondary-minus: #9ca3af;
-  --color-secondary-midtone: #6b7280;
+  --color-secondary-minus: #6b7280;
+  --color-secondary-midtone: #9ca3af;
   --color-cta: #b91c1c;
   --color-cta-hover: #ef4444;
   --color-cta-low: #fecaca;
   --color-verify: #16a34a;
   --color-success: #4ade80;
   --color-loading: #bbf7d0;
+  
+  /* Shadcn semantic variables - Light theme */
+  --background: var(--color-background-light);
+  --foreground: var(--color-secondary);
+  --card: var(--color-primary);
+  --card-foreground: var(--color-secondary);
+  --popover: var(--color-primary);
+  --popover-foreground: var(--color-secondary);
+  --primary: var(--color-secondary);
+  --primary-foreground: var(--color-primary);
+  --secondary: var(--color-primary-plus);
+  --secondary-foreground: var(--color-secondary);
+  --muted: var(--color-background-light);
+  --muted-foreground: var(--color-secondary-minus);
+  --accent: var(--color-primary-plus);
+  --accent-foreground: var(--color-secondary);
+  --destructive: var(--color-cta);
+  --destructive-foreground: var(--color-primary);
+  --border: var(--color-primary-plus);
+  --input: var(--color-primary-plus);
+  --ring: var(--color-cta);
+  --radius: 0.625rem;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.dark {
+  /* Shadcn semantic variables - Dark theme */
+  --background: var(--color-background-dark);
+  --foreground: var(--color-primary);
+  --card: var(--color-secondary);
+  --card-foreground: var(--color-primary);
+  --popover: var(--color-secondary);
+  --popover-foreground: var(--color-primary);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-secondary);
+  --secondary: var(--color-secondary-minus);
+  --secondary-foreground: var(--color-primary);
+  --muted: var(--color-background-dark);
+  --muted-foreground: var(--color-secondary-midtone);
+  --accent: var(--color-secondary-minus);
+  --accent-foreground: var(--color-primary);
+  --destructive: var(--color-cta-hover);
+  --destructive-foreground: var(--color-primary);
+  --border: var(--color-secondary);
+  --input: var(--color-secondary);
+  --ring: var(--color-cta);
+}
+
+/* Theme configuration for Tailwind */
+@theme {
+  /* Your custom colors available as utility classes */
+  --color-primary: var(--color-primary);
+  --color-primary-plus: var(--color-primary-plus);
+  --color-secondary: var(--color-secondary);
+  --color-background-dark: var(--color-background-dark);
+  --color-background-light: var(--color-background-light);
+  --color-secondary-minus: var(--color-secondary-minus);
+  --color-secondary-midtone: var(--color-secondary-midtone);
+  --color-cta: var(--color-cta);
+  --color-cta-hover: var(--color-cta-hover);
+  --color-cta-low: var(--color-cta-low);
+  --color-verify: var(--color-verify);
+  --color-success: var(--color-success);
+  --color-loading: var(--color-loading);
+  
+  /* Shadcn semantic colors mapped to theme */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* Border radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
