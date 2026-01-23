@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { SERVER_API_URL } from '@/app.config';
 import {
   User,
   Mail,
@@ -173,7 +174,7 @@ const StudentProfilePage = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   const studentId = params.id as string;
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mjs-backend-server.onrender.com';
+  const SERVER_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mjs-backend-server.onrender.com';
 
   useEffect(() => {
     fetchStudentData();
@@ -184,7 +185,7 @@ const StudentProfilePage = () => {
       setLoading(true);
       
       // Fetch student data
-      const studentResponse = await fetch(`${API_BASE_URL}/students/${studentId}`);
+      const studentResponse = await fetch(`${SERVER_API_URL}/students/${studentId}`);
       if (!studentResponse.ok) {
         throw new Error('Failed to fetch student data');
       }
@@ -199,7 +200,7 @@ const StudentProfilePage = () => {
       ].filter(Boolean);
 
       const guardianPromises = guardianIds.map(id => 
-        fetch(`${API_BASE_URL}/guardians/${id}`).then(res => {
+        fetch(`${SERVER_API_URL}/guardians/${id}`).then(res => {
           if (!res.ok) throw new Error(`Failed to fetch guardian ${id}`);
           return res.json();
         })
