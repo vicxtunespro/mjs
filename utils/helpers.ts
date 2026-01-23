@@ -14,3 +14,17 @@ export function toProperCase(str: string): string {
     .toLowerCase()
     .replace(/\b\w/g, char => char.toUpperCase());
 }
+
+
+
+export const fetchStudentData = async () => {
+  const response = await fetch(`${API_BASE_URL}/students`);
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch students data');
+  }
+
+  const result = await response.json();
+  return result.data;
+};
+
