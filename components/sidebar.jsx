@@ -167,7 +167,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
       >
         <MenuLink
           id="admissions"
-          href="/admin/students/admissions"
+          href="/admin/admissions"
           title="Admissions"
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
@@ -180,7 +180,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
         />
         <MenuLink
           id="learners"
-          href="/admin/students/learners"
+          href="/admin/students"
           title="View Learners"
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
@@ -193,7 +193,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
         />
         <MenuLink
           id="Performance"
-          href="/admin/students/performance"
+          href="#"
           title="Performance"
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}

@@ -114,9 +114,8 @@ export default function StudentUpdateForm() {
     setStudentFound(false);
 
     try {
-      const response = await fetch(
-        `https://mjs-backend-server.onrender.com/students/view?${searchType}=${searchQuery.trim()}`
-      );
+      const url = `https://mjs-backend-server.onrender.com/students/view?${searchType}=${encodeURIComponent(searchQuery.trim())}`
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Student not found');

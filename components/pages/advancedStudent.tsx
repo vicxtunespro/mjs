@@ -1476,7 +1476,7 @@ const EnhancedStudentTable = () => {
                                       <Eye className="h-4 w-4 mr-2" />
                                       View Full Profile
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push(`/admin/students/edit/${student._id}`)}>
                                       <Pencil className="h-4 w-4 mr-2" />
                                       Edit Details
                                     </DropdownMenuItem>
