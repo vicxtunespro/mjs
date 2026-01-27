@@ -3,7 +3,7 @@ import UnderConstruction from '@/components/UC';
 import InfoCardArea from '@/components/infoCards';
 import LearnersTable from '@/components/tables/clientsTable';
 import StudentSummary from '@/components/charts/studentSummary';
-import studentsData from '@/Data/students.json';
+import studentsData from '@/src/data/students.json';
 import EventManagementSystem from '@/components/eventManagementSystem';
 import AdmissionSystem from '@/components/admissions';
 

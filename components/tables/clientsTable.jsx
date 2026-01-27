@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
-import studentsData from '@/Data/students.json'; // Importing sample data
+import studentsData from '@/src/data/students.json'; // Importing sample data
 import {
   Table,
   TableBody,
@@ -32,13 +32,11 @@ import {
 import { Eye, Trash2, Pencil, Download, Search, Filter, ChevronUp, ChevronDown, User, Mail, Phone, MapPin, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import useModalStore from '@/store/modalStore';
-
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { styled } from '@mui/material/styles';
 import SectionHeader from '../ui/sectionHeader';
-
 // Custom styled button with your colors
 const CustomButton = styled(Button)(({ theme, active }) => ({
   backgroundColor: active ? '#333333' : 'transparent',

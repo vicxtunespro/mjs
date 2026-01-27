@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
-import studentsData from '@/Data/student_exam_marks.json'; // Assuming merged data with levels, etc.
+import studentsData from '@/src/data/student_exam_marks.json'; // Assuming merged data with levels, etc.
 import {
   Table,
   TableBody,
