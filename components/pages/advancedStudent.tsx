@@ -165,6 +165,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import clsx from 'clsx';
+import SectionHeader from '../ui/sectionHeader';
 
 // Type definitions
 interface StudentName {
@@ -277,86 +279,6 @@ interface QuickActionsState {
   autoRefresh: boolean;
 };
 
-
-// Sample data with enhanced fields
-// const studentsData: Student[] = [
-//   {
-//     "_id": "696e3877ce647cc38199e415",
-//     "registration_id": "MJS-260119-165814-282",
-//     "name": { "first_name": "VICTOR", "last_name": "NUWARIMPA", "other_names": "VICTOR NUWARIMPA" },
-//     "class": { "name": "Level 5", "stream": "Apple" },
-//     "residence": { "region": "Central", "district": "Wakiso", "village": "Kitemu", "address": "Plot 123, Kitemu Rd" },
-//     "guardian1": { "guardian_id": "G260119100104576", "relationship": "Mother", "name": "Sarah Nuwariimpa", "phone": "+256-712-345678", "email": "sarah.n@email.com" },
-//     "guardian2": { "relationship": "Father", "name": "James Nuwariimpa", "phone": "+256-701-234567" },
-//     "contact": { "phone": "+256-712-345679", "email": "victor.n@student.edu" },
-//     "gender": "Male",
-//     "date_of_birth": "2012-05-15T00:00:00.000Z",
-//     "religion": "Christianity",
-//     "section": "Primary",
-//     "house": "Day",
-//     "club": ["Debate", "Football", "Music"],
-//     "photo": "",
-//     "createdAt": "2026-01-19T13:58:15.731Z",
-//     "updatedAt": "2026-01-19T13:58:15.731Z",
-//     "__v": 0,
-//     "status": "active",
-//     "attendance_rate": 94,
-//     "performance_score": 85,
-//     "medical_notes": "Asthma - requires inhaler",
-//     "allergies": ["Peanuts", "Dust"],
-//     "notes": "Excellent in mathematics"
-//   },
-//   {
-//     "_id": "696dd6b305d518e945fa8ec4",
-//     "registration_id": "MJS-260119-100106-240",
-//     "name": { "first_name": "MATOVU", "last_name": "MURSHID" },
-//     "class": { "name": "Pre B" },
-//     "residence": { "region": "Central", "district": "Kampala", "village": "NABBINGO" },
-//     "guardian1": { "guardian_id": "G260119100104576", "relationship": "Mother", "name": "Amina Murshid", "phone": "+256-712-345680" },
-//     "guardian2": { "guardian_id": "G260119100106257", "relationship": "Father", "name": "Hassan Murshid" },
-//     "gender": "Male",
-//     "date_of_birth": "2020-01-21T00:00:00.000Z",
-//     "religion": "Islam",
-//     "section": "Pre-Primary",
-//     "house": "",
-//     "photo": "",
-//     "createdAt": "2026-01-19T07:01:07.537Z",
-//     "updatedAt": "2026-01-19T07:01:07.537Z",
-//     "__v": 0,
-//     "status": "active",
-//     "attendance_rate": 98,
-//     "performance_score": 92,
-//     "allergies": ["None"],
-//     "notes": "Quick learner, very attentive"
-//   },
-//   {
-//     "_id": "695e4a29837e0668dab14d1a",
-//     "registration_id": "MJS-260107-145728-139",
-//     "name": { "first_name": "John", "last_name": "Dementa" },
-//     "class": { "name": "Level 4" },
-//     "residence": { "region": "East", "district": "Mbale", "village": "Jamika" },
-//     "guardian1": { "guardian_id": "G260102134316924", "relationship": "Mother", "name": "Mary Dementa" },
-//     "guardian2": { "relationship": "Father" },
-//     "gender": "Female",
-//     "date_of_birth": "2011-01-07T00:00:00.000Z",
-//     "religion": "Christianity",
-//     "section": "Primary",
-//     "house": "",
-//     "photo": "https://res.cloudinary.com/dzidperyt/image/upload/v1767787046/xr8621am0egexaycb8ws.jpg",
-//     "createdAt": "2026-01-07T11:57:29.363Z",
-//     "updatedAt": "2026-01-07T11:57:29.363Z",
-//     "__v": 0,
-//     "status": "active",
-//     "attendance_rate": 89,
-//     "performance_score": 78,
-//     "medical_notes": "Wears glasses",
-//     "allergies": ["None"],
-//     "club": ["Art", "Drama"],
-//     "notes": "Creative artist"
-//   },
-//   // Add more enhanced sample data as needed...
-// ];
-
 const EnhancedStudentTable = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -372,6 +294,7 @@ const EnhancedStudentTable = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid' | 'compact'>('table');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [studentsData, setStudentsData] = useState<Student[]>([]);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
     id: true,
     name: true,
@@ -863,19 +786,20 @@ const EnhancedStudentTable = () => {
     };
 
     const confirmDelete = async (id: string) => {
-
+      setIsDeleting(true);
       try {
         console.log(id);
         await deleteStudentRow(id);
-        toast.success('Student deleted successfully', {
-          description: `${selectedStudent?.name?.first_name} ${selectedStudent?.name?.last_name} has been removed`,
-        });
+        toast.success('Student deleted successfully');
         setDeleteDialogOpen(false);
         setSelectedStudent(null);
+        router.refresh();
       } catch (error) {
         toast.error('Student deleted successfully', {
           description: `${selectedStudent?.name?.first_name} ${selectedStudent?.name?.last_name} could'nt not be deleted`,
         });
+      } finally{
+        setIsDeleting(false);
       }
     };
 
@@ -889,7 +813,7 @@ const EnhancedStudentTable = () => {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-2xl md:text-3xl">Student Management</CardTitle>
+                  <SectionHeader title={"Student management"} subtitle={"All students data in one place"} Icon={'Users'} />
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -1446,7 +1370,7 @@ const EnhancedStudentTable = () => {
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <Button onClick={() => router.push(`/admin/students/${student.}`)} variant="ghost" size="icon" className="h-8 w-8">
                                         <Eye className="h-4 w-4" />
                                       </Button>
                                     </TooltipTrigger>
@@ -1753,10 +1677,10 @@ const EnhancedStudentTable = () => {
         </Card>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} >
+          <AlertDialogContent className='bg-primary'>
+            <AlertDialogHeader >
+              <AlertDialogTitle className='text-secondary'>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete{' '}
                 <span className="font-semibold">
@@ -1766,12 +1690,12 @@ const EnhancedStudentTable = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel className='text-secondary'>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => confirmDelete(selectedStudent?._id ?? '')}
-                className="bg-red-600 hover:bg-red-700"
+                className={clsx(isDeleting ? 'bg-red-500' : '"bg-cta hover:bg-red-700"')}
               >
-                Delete Student
+                {isDeleting ? 'Deleting...' : 'Delete Student'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

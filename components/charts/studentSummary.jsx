@@ -13,53 +13,56 @@ const StudentSummaries = ({ data }) => {
 
   // Aggregate data
   useEffect(() => {
-    const genderCount = data.reduce((acc, student) => {
-      acc[student.gender] = (acc[student.gender] || 0) + 1;
-      return acc;
-    }, {});
-    
-    const sectionCount = data.reduce((acc, student) => {
-      acc[student.section] = (acc[student.section] || 0) + 1;
-      return acc;
-    }, {});
-    
-    const levelCount = data.reduce((acc, student) => {
-      acc[student.level] = (acc[student.level] || 0) + 1;
-      return acc;
-    }, {});
+    console.log(data)
+    if (data) {
+      const genderCount = data.reduce((acc, student) => {
+        acc[student.gender] = (acc[student.gender] || 0) + 1;
+        return acc;
+      }, { data });
 
-    setChartData({
-      gender: {
-        labels: Object.keys(genderCount),
-        datasets: [{
-          data: Object.values(genderCount),
-          backgroundColor: ['#b91c1c', '#374151', '#991b1b'],
-          hoverBackgroundColor: ['#dc2626', '#4b5563', '#b91c1c'],
-          borderColor: '#ffffff',
-          borderWidth: 0.5,
-        }],
-      },
-      section: {
-        labels: Object.keys(sectionCount),
-        datasets: [{
-          data: Object.values(sectionCount),
-          backgroundColor: ['#b91c1c', '#374151'],
-          hoverBackgroundColor: ['#dc2626', '#4b5563'],
-          borderColor: '#ffffff',
-          borderWidth: 0.5,
-        }],
-      },
-      level: {
-        labels: Object.keys(levelCount),
-        datasets: [{
-          data: Object.values(levelCount),
-          backgroundColor: '#b91c1c',
-          hoverBackgroundColor: '#dc2626',
-          borderColor: '#ffffff',
-          borderWidth: 0.5,
-        }],
-      },
-    });
+      const sectionCount = data.reduce((acc, student) => {
+        acc[student.section] = (acc[student.section] || 0) + 1;
+        return acc;
+      }, {});
+
+      const levelCount = data.reduce((acc, student) => {
+        acc[student.class.name] = (acc[student.class.name] || 0) + 1;
+        return acc;
+      }, {});
+
+      setChartData({
+        gender: {
+          labels: Object.keys(genderCount),
+          datasets: [{
+            data: Object.values(genderCount),
+            backgroundColor: ['#b91c1c', '#374151', '#991b1b'],
+            hoverBackgroundColor: ['#dc2626', '#4b5563', '#b91c1c'],
+            borderColor: '#ffffff',
+            borderWidth: 0.5,
+          }],
+        },
+        section: {
+          labels: Object.keys(sectionCount),
+          datasets: [{
+            data: Object.values(sectionCount),
+            backgroundColor: ['#b91c1c', '#374151'],
+            hoverBackgroundColor: ['#dc2626', '#4b5563'],
+            borderColor: '#ffffff',
+            borderWidth: 0.5,
+          }],
+        },
+        level: {
+          labels: Object.keys(levelCount),
+          datasets: [{
+            data: Object.values(levelCount),
+            backgroundColor: '#b91c1c',
+            hoverBackgroundColor: '#dc2626',
+            borderColor: '#ffffff',
+            borderWidth: 0.5,
+          }],
+        },
+      });
+    }
   }, [data]);
 
   const chartOptions = {
@@ -127,7 +130,7 @@ const StudentSummaries = ({ data }) => {
         <div className="bg-gradient-to-br from-primary to-primary-midtone
           dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
           border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-primary">Gender Distribution</h2>
+          <h2 className="text-md font-medium mb-2 text-secondary">Gender Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.gender} options={donutOptions} />
           </div>
@@ -135,7 +138,7 @@ const StudentSummaries = ({ data }) => {
         <div className="bg-gradient-to-br from-primary to-primary-midtone
           dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
           border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-primary">Section Distribution</h2>
+          <h2 className="text-md font-medium mb-2 text-secondary">Section Distribution</h2>
           <div className="h-64">
             <Doughnut data={chartData.section} options={donutOptions} />
           </div>
@@ -143,7 +146,7 @@ const StudentSummaries = ({ data }) => {
         <div className="bg-gradient-to-br from-primary to-primary-midtone
           dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
           border border-primary dark:border-secondary-minus p-4 rounded-lg shadow-md">
-          <h2 className="text-md font-medium mb-2 text-primary">Level Distribution</h2>
+          <h2 className="text-md font-medium mb-2 text-secondary">Level Distribution</h2>
           <div className="h-64">
             <Bar data={chartData.level} options={barOptions} />
           </div>

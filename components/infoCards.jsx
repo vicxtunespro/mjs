@@ -56,7 +56,7 @@ export default function InfoCardArea() {
   return (
     <div className='w-full p-8 bg-background-light dark:bg-background-dark h-fit py-16 text-secondary dark:text-primary'>
 
-        <div className='w-full grid grid-cols-6 md:grid-cols-12 gap-4'>
+        <div className='w-full grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4'>
             {
                 SampleData.map(({id, count, title, filters, icon}) => (
                       <InfoCard key={id} id={id} count={count} title={title} filters={filters} icon={icon} />
@@ -71,7 +71,7 @@ const InfoCard = ({id, count, title, filters, icon}) => {
     const [activeFilter, setActiveFilter] = useState('all');
     return (
         <div className='
-          col-span-6 md:col-span-3
+          col-span-4 md:col-span-3 lg:col-span-3
           bg-gradient-to-br from-primary to-primary-midtone
           dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
           border border-primary dark:border-secondary-minus

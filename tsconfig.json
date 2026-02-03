@@ -37,7 +37,7 @@
     "src/services/jsonReader.js",
     "components/tables/readyForAdmissions.jsx",
     ".next/dev/types/**/*.ts"
-, "app/admin/admissions/layout.jsx", "app/admin/admissions/interview-upadate", "app/admin/students/layout.jsx"  ],
+, "app/admin/admissions/layout.jsx", "app/admin/admissions/interview-upadate", "app/admin/students/layout.jsx", "components/sidebar.jsx"  ],
   "exclude": [
     "node_modules"
   ]
