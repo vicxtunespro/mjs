@@ -487,7 +487,7 @@ export default function StudentRegistrationPage() {
 
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/view/${guardianID}`
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${guardianID}`
       );
 
       if (!response.ok) {
@@ -526,7 +526,7 @@ export default function StudentRegistrationPage() {
 
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/view/${guardianID}`
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${guardianID}`
       );
 
       if (!response.ok) {
@@ -563,7 +563,7 @@ export default function StudentRegistrationPage() {
   const patchGuardianPhoto = async (guardianId: string, photoUrl: string) => {
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/update/${guardianId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/update/${guardianId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -663,7 +663,7 @@ export default function StudentRegistrationPage() {
             ...(guardian1PhotoUrl && { photo: guardian1PhotoUrl }),
           };
 
-          const guardian1Response = await fetch("https://mjs-backend-server.onrender.com/guardians", {
+          const guardian1Response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guardians`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(guardian1Payload),
@@ -709,7 +709,7 @@ export default function StudentRegistrationPage() {
               ...(guardian2PhotoUrl && { photo: guardian2PhotoUrl }),
             };
 
-            const guardian2Response = await fetch("https://mjs-backend-server.onrender.com/guardians", {
+            const guardian2Response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guardians`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(guardian2Payload),
@@ -781,7 +781,7 @@ export default function StudentRegistrationPage() {
         if (studentData.residence.village?.trim()) studentPayload.residence.village = studentData.residence.village.trim();
       }
 
-      const studentResponse = await fetch("https://mjs-backend-server.onrender.com/students", {
+      const studentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/students`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(studentPayload),

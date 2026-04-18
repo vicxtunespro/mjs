@@ -162,7 +162,7 @@ export default function InterviewRegistrationPage() {
 
       console.log('📤 Sending payload:', payload);
 
-      const response = await fetch("https://mjs-backend-server.onrender.com/interviews", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

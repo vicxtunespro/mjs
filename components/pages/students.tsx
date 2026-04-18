@@ -353,7 +353,7 @@ const EnhancedStudentTable = () => {
     const colors: Record<string, string> = {
       'Primary': 'bg-green-100 text-green-800 hover:bg-green-100',
       'Pre-Primary': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
-      'Day Care': 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+      'Day Care': 'bg-red-100 text-gray-800 hover:bg-red-100',
     };
     return colors[section] || 'bg-gray-100 text-gray-800 hover:bg-gray-100';
   };
@@ -672,7 +672,7 @@ const EnhancedStudentTable = () => {
                             variant={student.gender === 'Male' ? 'default' : 'secondary'}
                             className={
                               student.gender === 'Male' 
-                                ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
+                                ? 'bg-red-100 text-gray-800 hover:bg-red-100' 
                                 : 'bg-pink-100 text-pink-800 hover:bg-pink-100'
                             }
                           >

@@ -24,7 +24,7 @@ export default function UnderConstruction ()  {
         </p>
         <a
           href="/"
-          className="inline-block bg-rose-500 text-primary dark:text-secondary px-4 py-2 rounded hover:bg-blue-600 transition"
+          className="inline-block bg-rose-500 text-primary dark:text-secondary px-4 py-2 rounded hover:bg-red-600 transition"
         >
           Back to Home
         </a>

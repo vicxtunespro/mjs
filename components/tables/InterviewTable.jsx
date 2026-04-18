@@ -159,7 +159,7 @@ const InterviewTable = ({Data}) => {
     if (window.confirm(`Are you sure you want to delete this candidate wit id: ${id}`)) {
       console.log(Data);
       try {
-        await fetch(`https://mjs-backend-server.onrender.com/interviews/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews/${id}`, {
           method: 'DELETE'
         });
         alert("Candidate deleted successfully.");

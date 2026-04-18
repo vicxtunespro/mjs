@@ -170,7 +170,7 @@ const StudentProfilePage = () => {
     const [activeTab, setActiveTab] = useState('overview');
 
     const studentId = params.id as string;
-    const SERVER_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mjs-backend-server.onrender.com';
+    const SERVER_API_URL = process.env.NEXT_PUBLIC_API_URL  ;
 
     useEffect(() => {
         fetchStudentData();
@@ -236,7 +236,7 @@ const StudentProfilePage = () => {
         const colors: Record<string, string> = {
             'active': 'bg-green-100 text-green-800 border-green-200',
             'inactive': 'bg-gray-100 text-gray-800 border-gray-200',
-            'graduated': 'bg-blue-100 text-blue-800 border-blue-200',
+            'graduated': 'bg-red-100 text-gray-800 border-blue-200',
             'transferred': 'bg-purple-100 text-purple-800 border-purple-200',
         };
         return colors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
@@ -700,13 +700,11 @@ const StudentProfilePage = () => {
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>
-                                                {student?.club && student?.club.length > 0 ? (
+                                                {student?.club ? (
                                                     <div className="flex flex-wrap gap-2">
-                                                        {student?.club.map((club, index) => (
-                                                            <Badge key={index} variant="outline" className="px-3 py-1">
-                                                                {club}
+                                                            <Badge variant="outline" className="px-3 py-1">
+                                                                {student.club}
                                                             </Badge>
-                                                        ))}
                                                     </div>
                                                 ) : (
                                                     <div className="text-gray-500 text-center py-4">No club activities</div>

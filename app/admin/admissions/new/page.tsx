@@ -1,7 +1,7 @@
-import StudentRegistrationPage from "@/components/pages/new-student";
+import StudentRegistrationPage from "@/components/registration";
 
 export default function NewStudent() {
     return(
-        <StudentRegistrationPage />
+        <StudentRegistrationPage/>
     )
 }

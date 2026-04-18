@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from "@/components/ui/sonner"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background-light dark:bg-background-dark text-primary dark:text-secondary`}
+        className="font-sans antialiased bg-background-light dark:bg-background-dark text-primary dark:text-secondary"
       >
         {children}
         <ToastContainer
@@ -42,6 +39,7 @@ export default function RootLayout({
           pauseOnHover
           theme="colored" // or "light", "dark"
         />
+        <Toaster position="top-right" />
       </body>
     </html>
   );

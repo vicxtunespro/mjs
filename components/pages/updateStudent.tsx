@@ -255,7 +255,7 @@ export default function StudentUpdatePage() {
   const fetchGuardianData = async (guardianId: string, guardianType: 'guardian1' | 'guardian2', relationship: string = '') => {
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/view/${guardianId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${guardianId}`
       );
       
       if (response.ok) {
@@ -604,7 +604,7 @@ export default function StudentUpdatePage() {
 
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/view/${guardianID}`
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${guardianID}`
       );
 
       if (!response.ok) {
@@ -645,7 +645,7 @@ export default function StudentUpdatePage() {
 
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/view/${guardianID}`
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${guardianID}`
       );
 
       if (!response.ok) {
@@ -685,7 +685,7 @@ export default function StudentUpdatePage() {
   const patchGuardianPhoto = async (guardianId: string, photoUrl: string) => {
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/update/${guardianId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/update/${guardianId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -707,7 +707,7 @@ export default function StudentUpdatePage() {
   const updateGuardianRelationship = async (guardianId: string, relationship: string) => {
     try {
       const response = await fetch(
-        `https://mjs-backend-server.onrender.com/guardians/update/${guardianId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/guardians/update/${guardianId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -727,7 +727,7 @@ export default function StudentUpdatePage() {
 
   // Create new guardian
   const createGuardian = async (guardianData: any): Promise<string> => {
-    const response = await fetch("https://mjs-backend-server.onrender.com/guardians", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guardians`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(guardianData),
@@ -921,7 +921,7 @@ export default function StudentUpdatePage() {
         if (studentData.residence.village?.trim()) studentPayload.residence.village = studentData.residence.village.trim();
       }
 
-      const studentResponse = await fetch(`https://mjs-backend-server.onrender.com/students/update/${studentId}`, {
+      const studentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/students/update/${studentId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(studentPayload),
@@ -1452,7 +1452,7 @@ export default function StudentUpdatePage() {
           </div>
 
           {/* Guardian 1 Information */}
-          <div className="p-8 border-b border-primary-plus dark:border-secondary bg-blue-50 dark:bg-blue-900/10">
+          <div className="p-8 border-b border-primary-plus dark:border-secondary bg-red-50 dark:bg-red-900/10">
             <div className="flex items-center gap-2 mb-6">
               <Users className="w-5 h-5 text-cta dark:text-cta" />
               <h2 className="text-lg font-semibold text-secondary dark:text-primary">Primary Guardian Information</h2>
@@ -1657,8 +1657,8 @@ export default function StudentUpdatePage() {
                         className={`
                           py-2 px-4 rounded-md my-4 text-sm text-white flex items-center justify-center gap-2
                           transition-all duration-200
-                          ${verifyState1 === "idle" && "bg-blue-600 hover:bg-blue-700"}
-                          ${verifyState1 === "loading" && "bg-blue-400 cursor-not-allowed"}
+                          ${verifyState1 === "idle" && "bg-red-600 hover:bg-red-700"}
+                          ${verifyState1 === "loading" && "bg-red-400 cursor-not-allowed"}
                           ${verifyState1 === "success" && "bg-green-600"}
                           ${verifyState1 === "error" && "bg-red-600"}
                         `}

@@ -95,7 +95,7 @@ const LearnersTable = () => {
         <div className="flex space-x-2">
           <button
             onClick={() => handleExport('csv')}
-            className="flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition"
+            className="flex items-center px-3 py-2 bg-red-100 text-gray-700 rounded-md hover:bg-red-200 transition"
           >
             <Download size={16} className="mr-1" />
             CSV
@@ -272,7 +272,7 @@ const LearnersTable = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">{item.enrollmentDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                      item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-gray-800'
                     }`}>
                       {item.status}
                     </span>

@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 export default function StudentAdmissionLayout({ children }) {
     const router = useRouter();
     const handleNewInterview = () =>{
-        router.push('/admin/students/admissions/interview')
+        router.push('/admin/admissions/interview')
     }
     const handleNewStudent = () =>{
-        router.push('/admin/students/admissions/new')
+        router.push('/admin/admissions/new')
     }
 
     return (

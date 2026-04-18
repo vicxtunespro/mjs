@@ -129,7 +129,7 @@ export default function InterviewUpdatePage() {
     try {
       // For demo purposes, using mock data
       // Replace with actual API call:
-      const response = await fetch(`https://mjs-backend-server.onrender.com/interviews/${interviewId}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews/${interviewId}`);
       const interviewRecord = await response.json();
       console.log(interviewRecord.data);
       
@@ -261,7 +261,7 @@ export default function InterviewUpdatePage() {
     try {
       console.log('📤 Sending update payload:', changes);
 
-      const response = await fetch(`https://mjs-backend-server.onrender.com/interviews/${interviewId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews/${interviewId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -319,12 +319,12 @@ export default function InterviewUpdatePage() {
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Security Alert */}
-        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="mb-6 bg-red-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-blue-900 font-medium mb-1">Data Protection Enabled</p>
-              <p className="text-blue-800 text-sm">
+              <p className="text-gray-900 font-medium mb-1">Data Protection Enabled</p>
+              <p className="text-gray-800 text-sm">
                 To prevent accidental changes, editing is disabled by default. Please enable editing below to modify interview data. This security measure ensures data integrity and prevents unauthorized modifications.
               </p>
             </div>

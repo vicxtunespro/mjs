@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, ColumnsSettingsIcon, HelpCircle, LayoutDashboard, MessageSquare, SidebarClose, SidebarOpenIcon, User, X, Menu } from 'lucide-react';
+import { Bell, HelpCircle, LayoutDashboard, MessageSquare, SidebarClose, SidebarOpenIcon, User, X, Menu, ChevronDown, Search } from 'lucide-react';
 
 const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -34,7 +34,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
   };
 
   const initialState = {
-    isMinimised: true,
+    isMinimised: false, // Changed to false by default for better UX
     isDropdownOpen: false,
     isPreferencesOpen: false,
     linkActive: null,
@@ -59,7 +59,7 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
   // Detect mobile screens
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640); // Tailwind's 'sm' breakpoint
+      setIsMobile(window.innerWidth < 640);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -77,217 +77,251 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Set active menu based on current pathname
+  // FIXED: Better active state detection
   useEffect(() => {
-    // Map paths to menu IDs
-    const pathToMenuMap = {
-      '/admin/dashboard': 'dashboard',
-      '/admin/mails': 'Mails',
-      '/admin/notifications': 'notifications',
-      // Add more path mappings as needed
-    };
-    
-    // Check if current path matches any mapped path
-    for (const [path, menuId] of Object.entries(pathToMenuMap)) {
-      if (pathname.startsWith(path)) {
-        setActiveMenu(menuId);
-        break;
-      }
+    // Check for exact matches first
+    if (pathname === '/admin/dashboard') {
+      setActiveMenu('dashboard');
+      setActiveDropdown(null);
+    } else if (pathname === '/admin/mails') {
+      setActiveMenu('Mails');
+      setActiveDropdown(null);
+    } else if (pathname === '/admin/notifications') {
+      setActiveMenu('notifications');
+      setActiveDropdown(null);
     }
-    
-    // For dropdown items, you might need more complex logic
-    if (pathname.includes('/admin/students')) {
+    // Check for student management children
+    else if (pathname.startsWith('/admin/admissions')) {
+      setActiveMenu('admissions');
+      setActiveDropdown('student_management');
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    } else if (pathname === '/admin/students') {
       setActiveMenu('learners');
       setActiveDropdown('student_management');
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    } else if (pathname.startsWith('/admin/students/bulk-upload')) {
+      setActiveMenu('bulk_upload'); // You need to add this ID
+      setActiveDropdown('student_management');
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    }
+    // Check for help desk children
+    else if (pathname.startsWith('/admin/help/faq')) {
+      setActiveMenu('faq');
+      setActiveDropdown('help');
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    } else if (pathname.startsWith('/admin/help/support')) {
+      setActiveMenu('support');
+      setActiveDropdown('help');
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    } else if (pathname.startsWith('/admin/help/contact')) {
+      setActiveMenu('contact');
+      setActiveDropdown('help');
       dispatch({ type: 'TOGGLE_DROPDOWN' });
     }
   }, [pathname]);
 
   const drawerContent = (
-    <div className="w-full p-4 h-full bg-primary dark:bg-secondary">
+    <div className="w-full p-4 h-full bg-white dark:bg-gray-900">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            className="flex-shrink-0"
           >
-            <svg className="w-8 h-8 text-secondary  dark:text-primary mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-            </svg>
+            <div className="w-8 h-8 flex items-center justify-center text-white font-bold">
+              {!isMobile && (
+                <motion.button
+                  onClick={toggleMenu}
+                  className="text-secondary hover:bg-secondary/20 p-2 dark:hover:text-red-400 transition-colors rounded-full"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {state.isMinimised ? (
+                    <Menu className="w-6 h-6" />
+                  ) : (
+                    <SidebarClose className="w-5 h-5" />
+                  )}
+                </motion.button>
+              )}
+            </div>
           </motion.div>
-          <motion.h2 
-            className={`text-xl font-bold text-secondary  dark:text-primary ${state.isMinimised && !isMobile ? 'hidden' : 'block'}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            METRO SMS
-          </motion.h2>
+
         </div>
-        {!isMobile && (
-          <motion.button
-            onClick={toggleMenu}
-            className="text-secondary  dark:text-primary hover:text-secondary dark:text-primary"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <SidebarClose className={`${state.isMinimised ? 'hidden' : 'block'} w-6 h-6`} />
-          </motion.button>
-        )}
+        <motion.div
+          className="ml-3 text-xl font-bold text-gray-900 dark:text-gray-100 overflow-hidden"
+          initial={false}
+          animate={{
+            opacity: state.isMinimised && !isMobile ? 0 : 1,
+            width: state.isMinimised && !isMobile ? 0 : "auto",
+          }}
+          transition={{
+            duration: 0.5,
+            delay: 0.1,
+          }}
+        >
+          <Search className='w-5 h-5 text-secondary' />
+        </motion.div>
       </div>
 
-      <MenuLink
-        id="dashboard"
-        href="/admin/dashboard"
-        title="Dashboard"
-        icon={LayoutDashboard}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        isDropdownOpen={state.isDropdownOpen}
-        setActiveDropdown={setActiveDropdown}
-        isMinimised={state.isMinimised && !isMobile}
-        closeDropdowns={closeDropdowns}
-        pathname={pathname}
-      />
+      {/* Navigation */}
+      <nav className="space-y-1 pt-4">
+        <MenuLink
+          id="dashboard"
+          href="/admin/dashboard"
+          title="Dashboard"
+          icon={LayoutDashboard}
+          activeMenu={activeMenu}
+          setActiveMenu={setActiveMenu}
+          isMinimised={state.isMinimised && !isMobile}
+          closeDropdowns={closeDropdowns}
+          pathname={pathname}
+        />
 
-      <MenuDropdown 
-        id="student_management"
-        href="#"
-        title="Student Management" 
-        toggleDropdown={toggleDropdown} 
-        isDropdownOpen={state.isDropdownOpen} 
-        activeMenu={activeMenu} 
-        setActiveMenu={setActiveMenu} 
-        icon={User} 
-        setActiveDropdown={setActiveDropdown} 
-        activeDropdown={activeDropdown} 
-        isMinimised={state.isMinimised && !isMobile}
-        closeDropdowns={closeDropdowns}
-        pathname={pathname}
-      >
-        <MenuLink
-          id="admissions"
-          href="/admin/admissions"
-          title="Admissions"
+        <MenuDropdown
+          id="student_management"
+          title="Student Management"
+          toggleDropdown={toggleDropdown}
+          isDropdownOpen={state.isDropdownOpen}
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
+          icon={User}
+          setActiveDropdown={setActiveDropdown}
+          activeDropdown={activeDropdown}
           isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "student_management"}
-          isDropper={true}
           closeDropdowns={closeDropdowns}
           pathname={pathname}
-        />
-        <MenuLink
-          id="learners"
-          href="/admin/students"
-          title="View Learners"
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
-          isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "student_management"}
-          isDropper={true}
-          closeDropdowns={closeDropdowns}
-          pathname={pathname}
-        />
-        <MenuLink
-          id="Performance"
-          href="#"
-          title="Performance"
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
-          isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "student_management"}
-          isDropper={true}
-          closeDropdowns={closeDropdowns}
-          pathname={pathname}
-        />
-      </MenuDropdown>
+        >
+          <MenuLink
+            id="admissions"
+            href="/admin/admissions"
+            title="Admissions"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="learners"
+            href="/admin/students"
+            title="View Learners"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="bulk_upload"
+            href="/admin/students/bulk-upload"
+            title="Bulk Upload"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="Data Cleaning"
+            href="/admin/students/data-cleaning"
+            title="Data Cleaning"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="performance"
+            href="/admin/performance"
+            title="Performance"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+        </MenuDropdown>
 
-      <MenuLink
-        id="Mails"
-        href="/admin/mails"
-        title="Mails"
-        icon={MessageSquare}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        isDropdownOpen={state.isDropdownOpen}
-        setActiveDropdown={setActiveDropdown}
-        isMinimised={state.isMinimised && !isMobile}
-        closeDropdowns={closeDropdowns}
-        pathname={pathname}
-      />
+        <MenuLink
+          id="Mails"
+          href="/admin/mails"
+          title="Mails"
+          icon={MessageSquare}
+          activeMenu={activeMenu}
+          setActiveMenu={setActiveMenu}
+          isMinimised={state.isMinimised && !isMobile}
+          closeDropdowns={closeDropdowns}
+          pathname={pathname}
+        />
 
-      <MenuLink
-        id="notifications"
-        href="/admin/notifications"
-        title="Notifications"
-        icon={Bell}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        isDropdownOpen={state.isDropdownOpen}
-        isMinimised={state.isMinimised && !isMobile}
-        setActiveDropdown={setActiveDropdown}
-        closeDropdowns={closeDropdowns}
-        pathname={pathname}
-      />
+        <MenuLink
+          id="notifications"
+          href="/admin/notifications"
+          title="Notifications"
+          icon={Bell}
+          activeMenu={activeMenu}
+          setActiveMenu={setActiveMenu}
+          isMinimised={state.isMinimised && !isMobile}
+          closeDropdowns={closeDropdowns}
+          pathname={pathname}
+        />
 
-      <MenuDropdown 
-        id="help" 
-        title="Help Desk" 
-        toggleDropdown={toggleDropdown} 
-        isDropdownOpen={state.isDropdownOpen} 
-        activeMenu={activeMenu} 
-        setActiveMenu={setActiveMenu} 
-        icon={HelpCircle} 
-        setActiveDropdown={setActiveDropdown}
-        isMinimised={state.isMinimised && !isMobile} 
-        activeDropdown={activeDropdown}
-        closeDropdowns={closeDropdowns}
-        pathname={pathname}
-      >
-        <MenuLink
-          id="faq"
-          href="/admin/help/faq"
-          title="FAQ"
+        <MenuDropdown
+          id="help"
+          title="Help Desk"
+          toggleDropdown={toggleDropdown}
+          isDropdownOpen={state.isDropdownOpen}
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
+          icon={HelpCircle}
+          setActiveDropdown={setActiveDropdown}
           isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "help"}
-          isDropper={true}
+          activeDropdown={activeDropdown}
           closeDropdowns={closeDropdowns}
           pathname={pathname}
-        />
-        <MenuLink
-          id="support"
-          href="/admin/help/support"
-          title="Support Ticket"
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
-          isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "help"}
-          isDropper={true}
-          closeDropdowns={closeDropdowns}
-          pathname={pathname}
-        />
-        <MenuLink
-          id="contact"
-          href="/admin/help/contact"
-          title="Contact Us"
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          isDropdownOpen={state.isDropdownOpen}
-          isMinimised={state.isMinimised && !isMobile}
-          isDown={activeDropdown === "help"}
-          isDropper={true}
-          closeDropdowns={closeDropdowns}
-          pathname={pathname}
-        />
-      </MenuDropdown>
+        >
+          <MenuLink
+            id="faq"
+            href="/admin/help/faq"
+            title="FAQ"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="support"
+            href="/admin/help/support"
+            title="Support Ticket"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+          <MenuLink
+            id="contact"
+            href="/admin/help/contact"
+            title="Contact Us"
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
+            isMinimised={state.isMinimised && !isMobile}
+            isSubmenu={true}
+            closeDropdowns={closeDropdowns}
+            pathname={pathname}
+          />
+        </MenuDropdown>
+      </nav>
     </div>
   );
 
@@ -297,19 +331,19 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
       {isMobile && (
         <button
           onClick={toggleMenu}
-          className="fixed z-50 top-4 left-4 text-secondary  dark:text-primary bg-primary dark:bg-secondary p-2 rounded-lg hover:text-secondary dark:text-primary"
+          className="fixed z-[60] top-4 left-4 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 p-2.5 rounded-lg shadow-lg hover:text-red-600 dark:hover:text-red-400 border border-gray-200 dark:border-gray-700 transition-colors"
         >
-          <Menu size={24} />
+          <Menu size={20} />
         </button>
       )}
 
       {/* Sidebar */}
       <div
         className={clsx(
-          'fixed z-50 left-0 h-screen bg-primary dark:bg-secondary shadow-lg transition-all duration-300 ease-in-out',
+          'fixed z-[55] left-0 h-screen bg-white dark:bg-gray-900 shadow-xl transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800',
           {
             'w-64': !isMobile && !state.isMinimised,
-            'w-16': !isMobile && state.isMinimised,
+            'w-20': !isMobile && state.isMinimised, // Increased from 16 to 20 for better icon spacing
             'w-64 translate-x-0': isMobile && mobileOpen,
             'w-64 -translate-x-full': isMobile && !mobileOpen,
           }
@@ -320,173 +354,247 @@ const Sidebar = ({ userName = 'User', userRole = 'Staff' }) => {
         {isMobile && mobileOpen && (
           <button
             onClick={toggleMenu}
-            className="absolute top-4 right-4 text-secondary  dark:text-primary hover:text-secondary dark:text-primary"
+            className="absolute top-4 right-4 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
-        )}
-        {!isMobile && (
-          <motion.button
-            onClick={toggleMenu}
-            className={clsx(
-              'absolute -right-6 top-4 text-secondary  dark:text-primary bg-primary dark:bg-secondary p-2 pl-3 rounded-lg hover:text-secondary dark:text-primary',
-              { hidden: !state.isMinimised }
-            )}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <SidebarOpenIcon className="w-4 h-4" />
-          </motion.button>
         )}
       </div>
 
-      {/* Main Content Area */}
-      <div
-        className={clsx(
-          'flex-1 transition-all duration-300',
-          {
-            'ml-64': !isMobile && !state.isMinimised,
-            'ml-16': !isMobile && state.isMinimised,
-            'ml-0': isMobile,
-          }
-        )}
-      >
-      </div>
+      {/* Main Content Spacer */}
+      {!isMobile && (
+        <div
+          className={clsx(
+            'flex-shrink-0 transition-all duration-300',
+            state.isMinimised ? 'w-20' : 'w-64'
+          )}
+        />
+      )}
     </div>
   );
 };
 
-const MenuLink = ({ 
-  id, 
-  href, 
-  activeMenu, 
-  setActiveMenu, 
-  isDropdownOpen, 
-  title, 
-  icon: Icon, 
-  issues, 
-  isDown, 
-  setActiveDropdown, 
-  isMinimised, 
-  isDropper, 
+// FIXED: MenuLink Component with better styling
+const MenuLink = ({
+  id,
+  href,
+  activeMenu,
+  setActiveMenu,
+  title,
+  icon: Icon,
+  issues,
+  isMinimised,
+  isSubmenu,
   closeDropdowns,
-  pathname 
+  pathname
 }) => {
-  const isActive = activeMenu === id || (href && pathname.startsWith(href));
+  // FIXED: Better active state detection
+  const isActive = (() => {
+    if (!href) return false;
+    if (pathname === href) return true;
+    if (href === '/admin/students' && pathname === '/admin/students') return true;
+    if (href === '/admin/students/bulk-upload' && pathname === '/admin/students/bulk-upload') return true;
+    if (href !== '/admin/students' && pathname.startsWith(href + '/')) return true;
+    return false;
+  })();
 
-  const handleClick = () => {
+  const handleClick = (e) => {
+    if (href === '#') e.preventDefault();
     setActiveMenu(id);
-    if (isDown) {
+    if (!isSubmenu) {
       closeDropdowns();
     }
   };
 
   return (
-    <motion.div 
-      className="mb-2 text-sm flex items-center"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <a
-        href={href || '#'}
-        onClick={handleClick}
+    <Link href={href || '#'} passHref>
+      <motion.div
         className={clsx(
-          'relative flex items-center w-full p-2 gap-2 text-secondary  dark:text-primary hover:bg-primary-hover rounded-lg transition-colors duration-200',
-          { 
-            'bg-cta hover:bg-cta text-primary dark:text-secondary rounded-lg': isActive && !isDown,
-            'bg-rose-600 hover:bg-rose-600 text-primary': isActive && isDown,
-          }
+          "mb-1",
+          isSubmenu && "pl-10"
         )}
+        whileHover={{ x: 2 }}
+        whileTap={{ scale: 0.98 }}
       >
-        {Icon && <Icon size={21} />}
-        <span className={clsx('', { hidden: isMinimised && isDropper, hidden: isMinimised && !isDropper })}>
-          {title}
-        </span>
+        <div
+          onClick={handleClick}
+          className={clsx(
+            'relative flex items-center w-full rounded-lg transition-all duration-200 cursor-pointer',
+            {
+              'px-3 py-2': !isMinimised || isSubmenu,
+              'justify-center p-2': isMinimised && !isSubmenu,
+              'gap-3': !isMinimised || isSubmenu,
+            },
+            isActive
+              ? 'bg-red-600 text-white shadow-md shadow-red-200 dark:shadow-red-900/30'
+              : 'text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+          )}
+        >
+          {Icon && (
+            <Icon
+              size={isSubmenu ? 16 : 20}
+              className={clsx(
+                "flex-shrink-0",
+                isActive ? 'text-white' : 'text-gray-400 dark:text-gray-500'
+              )}
+            />
+          )}
 
-        {issues && (
-          <motion.span
-            className={clsx(
-              'absolute right-4 bg-secondary rounded-full w-5 h-5 flex items-center justify-center text-[10px]',
-              {
-                'bg-primary dark:bg-secondary text-secondary dark:text-primary': isActive,
-                'bg-secondary text-primary': !isActive,
-              }
-            )}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          >
-            12
-          </motion.span>
-        )}
-      </a>
-    </motion.div>
+          {(!isMinimised || isSubmenu) && (
+            <span className="flex-1 text-sm font-medium truncate">
+              {title}
+            </span>
+          )}
+
+          {issues && (
+            <motion.span
+              className={clsx(
+                'ml-auto w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium',
+                isActive
+                  ? 'bg-white text-red-600'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              )}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            >
+              12
+            </motion.span>
+          )}
+        </div>
+      </motion.div>
+    </Link>
   );
 };
 
-const MenuDropdown = ({ 
-  id, 
-  title, 
-  toggleDropdown, 
-  isDropdownOpen, 
-  activeMenu, 
-  setActiveMenu, 
-  setActiveDropdown, 
-  activeDropdown, 
-  icon: Icon, 
+// FIXED: MenuDropdown Component with proper z-index and positioning
+const MenuDropdown = ({
+  id,
+  title,
+  toggleDropdown,
+  isDropdownOpen,
+  activeMenu,
+  setActiveMenu,
+  setActiveDropdown,
+  activeDropdown,
+  icon: Icon,
   isMinimised,
   closeDropdowns,
   pathname,
-  children 
+  children
 }) => {
+  const dropdownRef = useRef(null);
   const isDown = activeDropdown === id;
-  const isActive = activeMenu === id || React.Children.toArray(children).some(child => 
-    child.props.href && pathname.startsWith(child.props.href)
-  );
+
+  // FIXED: Better active state detection for dropdown parent
+  const isActive = React.Children.toArray(children).some(child => {
+    const href = child.props.href;
+    if (!href) return false;
+    if (pathname === href) return true;
+    if (href === '/admin/students' && pathname === '/admin/students') return true;
+    if (href === '/admin/students/bulk-upload' && pathname === '/admin/students/bulk-upload') return true;
+    if (href !== '/admin/students' && pathname.startsWith(href + '/')) return true;
+    return false;
+  });
 
   const handleClick = () => {
     toggleDropdown();
-    setActiveDropdown(id);
+    setActiveDropdown(isDown ? null : id);
     setActiveMenu(id);
   };
 
+  // FIXED: Minimized state with hover dropdown
+  if (isMinimised) {
+    return (
+      <div
+        ref={dropdownRef}
+        className="relative mb-1"
+        onMouseEnter={() => setActiveDropdown(id)}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button
+          onClick={handleClick}
+          className={clsx(
+            'w-full p-2 rounded-lg transition-all flex justify-center relative',
+            isActive || isDown
+              ? 'text-red-600 bg-red-50 dark:bg-red-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+          )}
+          title={title}
+        >
+          <Icon size={20} />
+        </button>
+
+        {/* FIXED: Dropdown with higher z-index */}
+        <AnimatePresence>
+          {isDown && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-full top-0 ml-2 w-56 z-[100]"
+              style={{
+                filter: 'drop-shadow(0 4px 6px -1px rgb(0 0 0 / 0.1))'
+              }}
+            >
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+                <div className="px-4 py-3 bg-gradient-to-r from-red-600 to-red-500">
+                  <h3 className="text-sm font-semibold text-white">
+                    {title}
+                  </h3>
+                </div>
+                <div className="p-2">
+                  {children}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // Expanded state
   return (
-    <div className="mb-4 text-sm relative">
-      <motion.button 
+    <div className="mb-1">
+      <button
         onClick={handleClick}
         className={clsx(
-          'flex items-center w-full p-2 mb-1 text-secondary  dark:text-primary hover:bg-cta rounded-lg gap-2 transition-colors duration-200',
-          { 
-            'bg-cta hover:bg-cta text-secondary dark:text-primary': isActive && isDown,
-            'bg-primary-hover hover:bg-ba text-secondary dark:text-primary': isDown 
-          }
+          'flex items-center justify-between w-full px-3 py-2 rounded-lg transition-all group',
+          isActive || isDown
+            ? 'text-red-600 bg-red-50 dark:bg-red-900/20'
+            : 'text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
         )}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
       >
-        {Icon && <Icon size={21} />}
-        <span className={clsx('', { hidden: isMinimised })}>
-          {title}
-        </span>
-        <motion.svg 
-          className={clsx('w-4 h-4 ml-auto', { hidden: isMinimised })}
+        <div className="flex items-center gap-3">
+          <Icon
+            size={20}
+            className={clsx(
+              "flex-shrink-0",
+              isActive || isDown ? 'text-red-600' : 'text-gray-400 dark:text-gray-500'
+            )}
+          />
+          <span className="text-sm font-medium">{title}</span>
+        </div>
+        <motion.div
           animate={{ rotate: isDown && isDropdownOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </motion.svg>
-      </motion.button>
-      
+          <ChevronDown
+            size={16}
+            className={clsx(
+              "transition-colors",
+              isActive || isDown ? 'text-red-600' : 'text-gray-400 dark:text-gray-500'
+            )}
+          />
+        </motion.div>
+      </button>
+
       <AnimatePresence>
         {isDown && isDropdownOpen && (
           <motion.div
-            className={clsx(
-              'bg-primary dark:bg-secondary rounded-lg overflow-hidden',
-              { 'shadow-md absolute -right-54 top-1 p-2 w-48': isMinimised }
-            )}
+            className="overflow-hidden pl-9 mt-1 space-y-0.5"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}

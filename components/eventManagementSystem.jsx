@@ -71,7 +71,7 @@ const initialEvents = [
 
 // Event categories with colors
 const eventCategories = {
-  academic: { name: 'Academic', color: 'bg-blue-100 text-blue-800 border-blue-300' },
+  academic: { name: 'Academic', color: 'bg-red-100 text-gray-800 border-blue-300' },
   sports: { name: 'Sports', color: 'bg-green-100 text-green-800 border-green-300' },
   social: { name: 'Social', color: 'bg-primary text-secondary  dark:text-primary border-secondary-midtone' },
   administration: { name: 'Administration', color: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
@@ -239,7 +239,7 @@ const EventManagementSystem = () => {
           <h1 className="text-3xl font-bold text-secondary dark:text-primary">School Event Calendar</h1>
           <button
             onClick={() => setShowEventForm(true)}
-            className="flex items-center bg-blue-600 text-primary dark:text-secondary px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="flex items-center bg-red-600 text-primary dark:text-secondary px-4 py-2 rounded-lg hover:bg-red-700 transition"
           >
             <Plus size={18} className="mr-2" />
             Add Event
@@ -290,19 +290,19 @@ const EventManagementSystem = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => setView('month')}
-                  className={`px-3 py-1 rounded ${view === 'month' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
+                  className={`px-3 py-1 rounded ${view === 'month' ? 'bg-red-100 text-gray-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Month
                 </button>
                 <button
                   onClick={() => setView('week')}
-                  className={`px-3 py-1 rounded ${view === 'week' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
+                  className={`px-3 py-1 rounded ${view === 'week' ? 'bg-red-100 text-gray-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Week
                 </button>
                 <button
                   onClick={() => setView('day')}
-                  className={`px-3 py-1 rounded ${view === 'day' ? 'bg-blue-100 text-blue-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
+                  className={`px-3 py-1 rounded ${view === 'day' ? 'bg-red-100 text-gray-800' : 'text-secondary  dark:text-primary hover:bg-primary'}`}
                 >
                   Day
                 </button>
@@ -477,7 +477,7 @@ const EventManagementSystem = () => {
                   checked={newEvent.reminder}
                   onChange={handleInputChange}
                   id="reminder"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-primary-plus rounded"
+                  className="h-4 w-4 text-gray-600 focus:ring-blue-500 border-primary-plus rounded"
                 />
                 <label htmlFor="reminder" className="ml-2 block text-sm text-secondary dark:text-primary">
                   Set reminder for this event
@@ -494,7 +494,7 @@ const EventManagementSystem = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-primary dark:text-secondary rounded-md hover:bg-blue-700 flex items-center"
+                  className="px-4 py-2 bg-red-600 text-primary dark:text-secondary rounded-md hover:bg-red-700 flex items-center"
                 >
                   <Save size={18} className="mr-2" />
                   {editingEvent ? 'Update Event' : 'Create Event'}
@@ -537,9 +537,9 @@ const MonthView = ({ events, onEdit, onDelete }) => {
           return (
             <div
               key={day}
-              className={`min-h-24 p-2 border rounded-lg ${isToday ? 'bg-blue-50 border-blue-200' : 'border-primary'}`}
+              className={`min-h-24 p-2 border rounded-lg ${isToday ? 'bg-red-50 border-blue-200' : 'border-primary'}`}
             >
-              <div className={`text-right font-medium ${isToday ? 'text-blue-600' : 'text-secondary dark:text-primary'}`}>
+              <div className={`text-right font-medium ${isToday ? 'text-gray-600' : 'text-secondary dark:text-primary'}`}>
                 {day}
               </div>
               <div className="mt-1 space-y-1">
@@ -608,7 +608,7 @@ const EventCard = ({ event, onEdit, onDelete }) => {
         <div className="flex space-x-2">
           <button
             onClick={() => onEdit(event)}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-gray-600 hover:text-gray-800"
             aria-label="Edit event"
           >
             <Edit size={16} />

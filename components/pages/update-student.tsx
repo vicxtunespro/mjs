@@ -114,7 +114,7 @@ export default function StudentUpdateForm() {
     setStudentFound(false);
 
     try {
-      const url = `https://mjs-backend-server.onrender.com/students/view?${searchType}=${encodeURIComponent(searchQuery.trim())}`
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/students/view?${searchType}=${encodeURIComponent(searchQuery.trim())}`
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -155,7 +155,7 @@ export default function StudentUpdateForm() {
       // Load guardian data
       if (student.guardian1?.guardian_id) {
         const g1Response = await fetch(
-          `https://mjs-backend-server.onrender.com/guardians/view/${student.guardian1.guardian_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${student.guardian1.guardian_id}`
         );
         if (g1Response.ok) {
           const g1Data = await g1Response.json();
@@ -174,7 +174,7 @@ export default function StudentUpdateForm() {
 
       if (student.guardian2?.guardian_id) {
         const g2Response = await fetch(
-          `https://mjs-backend-server.onrender.com/guardians/view/${student.guardian2.guardian_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/guardians/view/${student.guardian2.guardian_id}`
         );
         if (g2Response.ok) {
           const g2Data = await g2Response.json();
@@ -367,7 +367,7 @@ export default function StudentUpdateForm() {
       }
 
       const studentResponse = await fetch(
-        `https://mjs-backend-server.onrender.com/students/update/${studentData.registration_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/students/update/${studentData.registration_id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -388,7 +388,7 @@ export default function StudentUpdateForm() {
         };
 
         await fetch(
-          `https://mjs-backend-server.onrender.com/guardians/update/${studentData.guardian1.guardian_id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/guardians/update/${studentData.guardian1.guardian_id}`,
           {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -407,7 +407,7 @@ export default function StudentUpdateForm() {
         };
 
         await fetch(
-          `https://mjs-backend-server.onrender.com/guardians/update/${studentData.guardian2.guardian_id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/guardians/update/${studentData.guardian2.guardian_id}`,
           {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -875,7 +875,7 @@ export default function StudentUpdateForm() {
 
             {/* Guardian 1 Information */}
             {studentData.guardian1?.guardian_id && (
-              <div className="p-8 border-b border-primary-plus dark:border-secondary bg-blue-50/50 dark:bg-blue-900/10">
+              <div className="p-8 border-b border-primary-plus dark:border-secondary bg-red-50/50 dark:bg-red-900/10">
                 <div className="flex items-center gap-2 mb-6">
                   <Users className="w-5 h-5 text-cta" />
                   <h2 className="text-lg font-semibold text-secondary dark:text-primary">Primary Guardian Information</h2>

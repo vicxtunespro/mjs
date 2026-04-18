@@ -3,6 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+
+
 /* Your custom color palette */
 :root {
   /* Color definitions */
@@ -121,4 +124,46 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Add these to your global.css for better mobile experience */
+
+/* Better touch targets */
+@media (max-width: 640px) {
+  button, 
+  [role="button"],
+  input,
+  select {
+    min-height: 44px;
+  }
+  
+  /* Prevent zoom on input focus */
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="date"],
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Smooth scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better tap highlight */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

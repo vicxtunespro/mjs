@@ -58,7 +58,7 @@ const AdmissionSystem = () => {
 
   //Interaction with backend (fetch interviews)
   useEffect(() => {
-    fetch("https://mjs-backend-server.onrender.com/interviews")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews`)
       .then(res => res.json())
       .then(response => {
         // Extract array from backend response
@@ -140,7 +140,7 @@ const AdmissionSystem = () => {
       setCandidates(candidates.filter(candidate => candidate.id !== id));
 
       try {
-        await fetch(`http//mjs-backend-server.onrender.com/interviews/${id}`, {
+        await fetch(`http//api.mjsportal.xyz/interviews/${id}`, {
           method: 'DELETE'
         });
         alert("Candidate deleted successfully.");
@@ -352,7 +352,7 @@ const CandidateRow = ({
                   />
                   <button
                     onClick={() => onUpdate(candidate.id, { interviewScore: localScore, status: 'Completed' })}
-                    className="ml-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-blue-600 hover:bg-blue-700"
+                    className="ml-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary dark:text-secondary bg-red-600 hover:bg-red-700"
                   >
                     Save Score
                   </button>
