@@ -145,7 +145,7 @@ function Account({ role, href, isLoading, onClick }: AccountProps) {
           />
         )}
       </div>
-      <p className="text-xs text-primary">{role}</p>
+      <p className="text-xs text-primary dark:text-secondary">{role}</p>
     </a>
   );
 }

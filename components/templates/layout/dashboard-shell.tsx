@@ -62,8 +62,6 @@ export function DashboardShell({
             }
             topbar={
                 <TopBar
-                    title="Dashboard"
-                    subtitle="Manage school operations"
                     user={{
                         name: "Sarah Nankya",
                         email: "sarah@redstonehigh.edu",

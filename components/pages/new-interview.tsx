@@ -1,15 +1,24 @@
 'use client'
-import React, { useState, useEffect} from 'react';
-import { AlertCircle, CheckCircle2, Loader2, UserPlus, School, BookOpen } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  UserPlus,
+  School,
+  BookOpen,
+  X,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Type definitions
 type Section = 'Pre-Primary' | 'Primary';
 type InterviewStatus = 'Pending' | 'Passed' | 'Failed';
+type ToastType = 'success' | 'error' | 'info';
 
 const CLASS_BY_SECTION: Record<Section, readonly string[]> = {
   'Pre-Primary': ['Pre A', 'Pre B', 'Pre C'],
-  'Primary': [
+  Primary: [
     'Level 1',
     'Level 2',
     'Level 3',
@@ -22,13 +31,13 @@ const CLASS_BY_SECTION: Record<Section, readonly string[]> = {
 
 const SUBJECTS_BY_SECTION: Record<Section, readonly string[]> = {
   'Pre-Primary': ['Number', 'Social Development', 'Oral', 'Health Habits', 'Writing'],
-  'Primary': ['Mathematics', 'English', 'Science', 'Social Studies'],
+  Primary: ['Mathematics', 'English', 'Science', 'Social Studies'],
 } as const;
 
-const getClassesBySection = (section: Section | '') => 
+const getClassesBySection = (section: Section | '') =>
   section ? CLASS_BY_SECTION[section as Section] : [];
 
-const getSubjectsBySection = (section: Section | '') => 
+const getSubjectsBySection = (section: Section | '') =>
   section ? SUBJECTS_BY_SECTION[section as Section] : [];
 
 interface CreateInterviewDTO {
@@ -45,11 +54,17 @@ interface CreateInterviewDTO {
   feedback?: string;
 }
 
+type ToastState = {
+  type: ToastType;
+  title: string;
+  message: string;
+} | null;
+
 export default function InterviewRegistrationPage() {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [toast, setToast] = useState<ToastState>(null);
 
   const [interviewData, setInterviewData] = useState<CreateInterviewDTO>({
     firstName: '',
@@ -68,76 +83,93 @@ export default function InterviewRegistrationPage() {
   const availableClasses = getClassesBySection(interviewData.section);
   const availableSubjects = getSubjectsBySection(interviewData.section);
 
-  // Reset class and subject when section changes
   useEffect(() => {
-    setInterviewData(prev => ({
+    setInterviewData((prev) => ({
       ...prev,
       class: '',
-      subject: ''
+      subject: '',
     }));
   }, [interviewData.section]);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    if (!toast) return;
+
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const showToast = (type: ToastType, title: string, message: string) => {
+    setToast({ type, title, message });
+  };
+
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setInterviewData(prev => ({ 
-      ...prev, 
-      [name]: value 
+
+    setInterviewData((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setInterviewData(prev => ({ 
-      ...prev, 
-      [name]: value 
+
+    setInterviewData((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
   const validateForm = (): boolean => {
     if (!interviewData.firstName.trim()) {
-      setErrorMessage('First name is required');
+      showToast('error', 'Missing first name', 'First name is required.');
       return false;
     }
+
     if (!interviewData.lastName.trim()) {
-      setErrorMessage('Last name is required');
+      showToast('error', 'Missing last name', 'Last name is required.');
       return false;
     }
+
     if (!interviewData.previousSchool.trim()) {
-      setErrorMessage('Previous school is required');
+      showToast('error', 'Missing previous school', 'Previous school is required.');
       return false;
     }
+
     if (!interviewData.section) {
-      setErrorMessage('Education level is required');
+      showToast('error', 'Missing education level', 'Education level is required.');
       return false;
     }
+
     if (!interviewData.class) {
-      setErrorMessage('Class is required');
+      showToast('error', 'Missing class', 'Class is required.');
       return false;
     }
+
     if (!interviewData.subject) {
-      setErrorMessage('Subject is required');
+      showToast('error', 'Missing subject', 'Subject is required.');
       return false;
     }
+
     if (!interviewData.issuedBy.trim()) {
-      setErrorMessage('Issued by is required');
+      showToast('error', 'Missing issued by', 'Issued by is required.');
       return false;
     }
+
     return true;
   };
 
   const handleInterviewSubmit = async () => {
-    setErrorMessage('');
-    
-    if (!validateForm()) {
-      setSubmitStatus('error');
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
-    setSubmitStatus('idle');
 
     try {
-      // Prepare payload - remove empty optional fields
       const payload: any = {
         firstName: interviewData.firstName.trim(),
         lastName: interviewData.lastName.trim(),
@@ -149,23 +181,26 @@ export default function InterviewRegistrationPage() {
         status: interviewData.status || 'Pending',
       };
 
-      // Only add optional fields if they have values
       if (interviewData.otherNames?.trim()) {
         payload.otherNames = interviewData.otherNames.trim();
       }
-      if (interviewData.score !== undefined && interviewData.score !== null && interviewData.score >= 0) {
+
+      if (
+        interviewData.score !== undefined &&
+        interviewData.score !== null &&
+        interviewData.score >= 0
+      ) {
         payload.score = Number(interviewData.score);
       }
+
       if (interviewData.feedback?.trim()) {
         payload.feedback = interviewData.feedback.trim();
       }
 
-      console.log('📤 Sending payload:', payload);
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interviews`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
@@ -176,23 +211,26 @@ export default function InterviewRegistrationPage() {
         throw new Error(responseData.message || `Server error: ${response.status}`);
       }
 
-      console.log("✅ Interview successfully saved:", responseData);
-      
-      setSubmitStatus('success');
-      
-      // Reset form after 2 seconds
+      showToast(
+        'success',
+        'Interview registered successfully',
+        'The interview record has been saved.'
+      );
+
       setTimeout(() => {
         handleReset();
-        setSubmitStatus('idle');
-      }, 2000);
-
+        router.push('/admin/students/admissions');
+      }, 1200);
     } catch (error) {
-      console.error("❌ Error submitting interview:", error);
-      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while submitting');
-      setSubmitStatus('error');
+      showToast(
+        'error',
+        'Failed to register interview',
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while submitting the interview.'
+      );
     } finally {
       setIsLoading(false);
-      router.push('/admin/students/admissions');
     }
   };
 
@@ -210,130 +248,135 @@ export default function InterviewRegistrationPage() {
       issuedBy: '',
       feedback: '',
     });
-    setSubmitStatus('idle');
-    setErrorMessage('');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary to-primary">
-      
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Success/Error Alerts */}
-        {submitStatus === 'success' && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-            <div>
-              <p className="text-green-800 font-medium">Interview registered successfully!</p>
-              <p className="text-green-700 text-sm">Form will reset automatically.</p>
+    <div className="min-h-screen bg-background px-3 py-8 text-foreground sm:px-4">
+      {toast && (
+        <div className="fixed right-4 top-4 z-[9999] w-[calc(100%-2rem)] max-w-md">
+          <div
+            className={[
+              'flex items-start gap-3 rounded-2xl border p-4 shadow-xl backdrop-blur-md',
+              toast.type === 'success'
+                ? 'border-green-200 bg-green-50 text-green-800'
+                : toast.type === 'error'
+                ? 'border-red-200 bg-red-50 text-red-800'
+                : 'border-border bg-card text-card-foreground',
+            ].join(' ')}
+          >
+            <div className="pt-0.5">
+              {toast.type === 'success' ? (
+                <CheckCircle2 className="h-5 w-5 text-green-600" />
+              ) : (
+                <AlertCircle className="h-5 w-5 text-red-600" />
+              )}
             </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">{toast.title}</p>
+              <p className="mt-1 text-sm opacity-90">{toast.message}</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="rounded-lg p-1 transition hover:bg-black/5"
+              aria-label="Close notification"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {submitStatus === 'error' && (
-          <div className="mb-6 bg-cta-low border border-cta-low rounded-lg p-4 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-cta flex-shrink-0" />
-            <div>
-              <p className="text-cta font-medium">Failed to register interview</p>
-              <p className="text-cta text-sm">{errorMessage}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Form Card */}
-        <div className="bg-primary dark:bg-secondary rounded-xl shadow-lg border border-primary">
-          {/* Personal Information Section */}
-          <div className="p-8 border-b border-primary">
-            <div className="flex items-center gap-2 mb-6">
-              <UserPlus className="w-5 h-5 text-cta" />
-              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Personal Information</h2>
+      <div className="mx-auto max-w-5xl">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+          <div className="border-b border-border p-6 md:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-brand" />
+              <h2 className="text-lg font-semibold">Personal Information</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  First Name <span className="text-cta">*</span>
+                <label className="mb-1 block text-sm font-medium">
+                  First Name <span className="text-brand">*</span>
                 </label>
                 <input
                   type="text"
                   name="firstName"
                   value={interviewData.firstName}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                   placeholder="John"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Last Name <span className="text-cta">*</span>
+                <label className="mb-1 block text-sm font-medium">
+                  Last Name <span className="text-brand">*</span>
                 </label>
                 <input
                   type="text"
                   name="lastName"
                   value={interviewData.lastName}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                   placeholder="Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Other Names
-                </label>
+                <label className="mb-1 block text-sm font-medium">Other Names</label>
                 <input
                   type="text"
                   name="otherNames"
                   value={interviewData.otherNames}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                   placeholder="Optional"
                 />
               </div>
             </div>
           </div>
 
-          {/* School Information Section */}
-          <div className="p-8 border-b border-primary">
-            <div className="flex items-center gap-2 mb-6">
-              <School className="w-5 h-5 text-cta" />
-              <h2 className="text-lg font-semibold text-secondary dark:text-primary">School Background</h2>
+          <div className="border-b border-border p-6 md:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <School className="h-5 w-5 text-brand" />
+              <h2 className="text-lg font-semibold">School Background</h2>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                Previous School <span className="text-cta">*</span>
+              <label className="mb-1 block text-sm font-medium">
+                Previous School <span className="text-brand">*</span>
               </label>
               <input
                 type="text"
                 name="previousSchool"
                 value={interviewData.previousSchool}
                 onChange={handleTextChange}
-                className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                 placeholder="Enter previous school name"
               />
             </div>
           </div>
 
-          {/* Academic Information Section */}
-          <div className="p-8 border-b border-primary">
-            <div className="flex items-center gap-2 mb-6">
-              <BookOpen className="w-5 h-5 text-cta" />
-              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Academic Details</h2>
+          <div className="border-b border-border p-6 md:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-brand" />
+              <h2 className="text-lg font-semibold">Academic Details</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Education Level <span className="text-cta">*</span>
+                <label className="mb-1 block text-sm font-medium">
+                  Education Level <span className="text-brand">*</span>
                 </label>
                 <select
                   name="section"
                   value={interviewData.section}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
                   <option value="">-- Select Level --</option>
                   <option value="Pre-Primary">Pre-Primary</option>
@@ -342,15 +385,15 @@ export default function InterviewRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Class <span className="text-cta">*</span>
+                <label className="mb-1 block text-sm font-medium">
+                  Class <span className="text-brand">*</span>
                 </label>
                 <select
                   name="class"
                   value={interviewData.class}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-primary"
                   disabled={!interviewData.section}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
                   <option value="">-- Select Class --</option>
                   {availableClasses.map((className) => (
@@ -362,15 +405,15 @@ export default function InterviewRegistrationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Subject <span className="text-cta">*</span>
+                <label className="mb-1 block text-sm font-medium">
+                  Subject <span className="text-brand">*</span>
                 </label>
                 <select
                   name="subject"
                   value={interviewData.subject}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary disabled:bg-primary dark:bg-secondary disabled:text-primary"
                   disabled={!interviewData.section}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
                   <option value="">-- Select Subject --</option>
                   {availableSubjects.map((subject) => (
@@ -383,18 +426,15 @@ export default function InterviewRegistrationPage() {
             </div>
           </div>
 
-          {/* Interview Details Section */}
-          <div className="p-8">
-            <div className="flex items-center gap-2 mb-6">
-              <CheckCircle2 className="w-5 h-5 text-cta" />
-              <h2 className="text-lg font-semibold text-secondary dark:text-primary">Interview Details</h2>
+          <div className="p-6 md:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-brand" />
+              <h2 className="text-lg font-semibold">Interview Details</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Score (Optional)
-                </label>
+                <label className="mb-1 block text-sm font-medium">Score (Optional)</label>
                 <input
                   type="number"
                   disabled
@@ -404,102 +444,86 @@ export default function InterviewRegistrationPage() {
                   value={interviewData.score ?? ''}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setInterviewData(prev => ({
+                    setInterviewData((prev) => ({
                       ...prev,
-                      score: value === '' ? undefined : Number(value)
+                      score: value === '' ? undefined : Number(value),
                     }));
                   }}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                   placeholder="0-100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Status
-                </label>
+                <label className="mb-1 block text-sm font-medium">Status</label>
                 <select
                   name="status"
                   disabled
                   value={interviewData.status}
                   onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Passed">Passed</option>
                   <option value="Failed">Failed</option>
                 </select>
               </div>
+
               <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Issued by
+                <label className="mb-1 block text-sm font-medium">
+                  Issued By <span className="text-brand">*</span>
                 </label>
                 <select
-                  name="status"
-                  value={interviewData.status}
-                  onChange={handleSelectChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition bg-primary dark:bg-secondary"
-                >
-                  <option value="Head Teacher">Head Teacher</option>
-                  <option value="Deputy Head Teacher">Deputy Head Teacher</option>
-                  <option value="Admissions OFficer">Admissions Officer</option>
-                </select>
-              </div>
-
-              {/* <div>
-                <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                  Issued By <span className="text-cta">*</span>
-                </label>
-                <input
-                  type="text"
                   name="issuedBy"
                   value={interviewData.issuedBy}
-                  onChange={handleTextChange}
-                  className="w-full px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition"
-                  placeholder="Head Teacher"
-                />
-              </div> */}
+                  onChange={handleSelectChange}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                >
+                  <option value="">-- Select Issuer --</option>
+                  <option value="Head Teacher">Head Teacher</option>
+                  <option value="Deputy Head Teacher">Deputy Head Teacher</option>
+                  <option value="Admissions Officer">Admissions Officer</option>
+                </select>
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary  dark:text-primary mb-1">
-                Feedback (Optional)
-              </label>
+              <label className="mb-1 block text-sm font-medium">Feedback (Optional)</label>
               <textarea
                 name="feedback"
                 value={interviewData.feedback}
                 onChange={handleTextChange}
                 rows={3}
-                className="w-full text-secondary  dark:text-primary px-3 py-2 border border-primary-plus rounded-lg focus:ring-2 focus:ring-cta focus:border-transparent transition resize-none"
+                className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                 placeholder="Enter any feedback or notes about the interview..."
               />
             </div>
           </div>
 
-          {/* Form Actions */}
-          <div className="px-8 py-6 bg-primary dark:bg-secondary rounded-b-xl flex justify-end gap-3">
+          <div className="flex justify-end gap-3 border-t border-border bg-muted/40 px-6 py-5 md:px-8">
             <button
               type="button"
               onClick={handleReset}
-              className="px-6 py-2.5 border border-primary-plus text-secondary  dark:text-primary rounded-lg hover:bg-primary dark:bg-secondary transition font-medium disabled:opacity-50"
+              className="rounded-xl border border-border bg-card px-6 py-2.5 font-medium text-foreground transition hover:bg-muted disabled:opacity-50"
               disabled={isLoading}
             >
               Reset
             </button>
+
             <button
               type="button"
               onClick={handleInterviewSubmit}
               disabled={isLoading}
-              className="px-6 py-2.5 bg-cta text-primary dark:text-secondary rounded-lg hover:bg-cta transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 font-medium text-brand-foreground transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Submitting...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="h-4 w-4" />
                   Register Interview
                 </>
               )}
@@ -507,9 +531,10 @@ export default function InterviewRegistrationPage() {
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-6 text-center text-sm text-primary">
-          <p>All fields marked with <span className="text-cta">*</span> are required</p>
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          <p>
+            All fields marked with <span className="text-brand">*</span> are required
+          </p>
         </div>
       </div>
     </div>

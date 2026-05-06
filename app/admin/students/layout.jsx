@@ -1,14 +1,26 @@
 'use client'
 import SectionHeader from "@/components/ui/sectionHeader";
+import { useEffect } from "react";
 import { BookAlert, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePageHeaderStore } from "@/store/usePageHeaderStore";
 
 export default function StudentAdmissionLayout({ children }) {
+
+    const setHeader = usePageHeaderStore((state) => state.setHeader);
+
+    useEffect(() => {
+        setHeader({
+            title: "Students",
+            subtitle: "Manage learner profiles, admissions, and academic records",
+        });
+    }, [setHeader]);
+
     const router = useRouter();
-    const handleNewInterview = () =>{
+    const handleNewInterview = () => {
         router.push('/admin/students/admissions/interview')
     }
-    const handleNewStudent = () =>{
+    const handleNewStudent = () => {
         router.push('/admin/students/admissions/new')
     }
 
@@ -36,7 +48,7 @@ export default function StudentAdmissionLayout({ children }) {
                         </button>
                     </div>
                 </div> */}
-                { children }
+                {children}
             </div>
         </div>
     )

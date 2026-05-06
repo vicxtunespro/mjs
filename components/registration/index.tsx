@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRegistration } from './hooks/useRegistration';
 import { FormProgress } from './components/FormProgress';
 import { PersonalInfo } from './steps/PersonalInfo';
@@ -56,37 +56,71 @@ export default function StudentRegistrationPage() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if mobile on mount and resize
+  const currentStepMeta = useMemo(() => {
+    return steps.find((step) => step.id === currentStep) ?? steps[0];
+  }, [currentStep]);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [currentStep]);
+
+  const markStepCompleted = (stepId: number) => {
+    setCompletedSteps((prev) => {
+      if (prev.includes(stepId)) return prev;
+      return [...prev, stepId];
+    });
+  };
+
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCompletedSteps(prev => [...new Set([...prev, currentStep])]);
-      setCurrentStep(prev => Math.min(prev + 1, steps.length));
+      markStepCompleted(currentStep);
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length));
       setShowMobileMenu(false);
     }
   };
 
   const handleBack = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
     setShowMobileMenu(false);
   };
 
   const handleStepClick = (stepId: number) => {
-    // Only allow navigation to completed steps or next available
-    if (completedSteps.includes(stepId) || stepId === currentStep || stepId === currentStep + 1) {
-      setCurrentStep(stepId);
-      setShowMobileMenu(false);
-    }
+    const isAccessible =
+      completedSteps.includes(stepId) ||
+      stepId === currentStep ||
+      stepId === currentStep + 1;
+
+    if (!isAccessible) return;
+
+    setCurrentStep(stepId);
+    setShowMobileMenu(false);
+  };
+
+  const handleRemoveSecondaryGuardian = () => {
+    setShowGuardian2(false);
+    setIsContinuingGuardian2(false);
+    setContinuingGuardian2ID('');
+
+    updateStudentData({
+      guardian2: {
+        full_name: '',
+        contact: '',
+        nin: '',
+        email: '',
+        relationship: '',
+      },
+    });
   };
 
   const renderStep = () => {
@@ -101,6 +135,7 @@ export default function StudentRegistrationPage() {
             onPhotoUpdate={updatePhoto}
           />
         );
+
       case 2:
         return (
           <AcademicInfo
@@ -111,6 +146,7 @@ export default function StudentRegistrationPage() {
             onPhotoUpdate={updatePhoto}
           />
         );
+
       case 3:
         return (
           <ResidenceInfo
@@ -121,6 +157,7 @@ export default function StudentRegistrationPage() {
             onPhotoUpdate={updatePhoto}
           />
         );
+
       case 4:
         return (
           <GuardianInfo
@@ -137,25 +174,35 @@ export default function StudentRegistrationPage() {
             onVerify={getContinuingGuardian1Info}
           />
         );
+
       case 5:
         return (
           <div className="space-y-4 sm:space-y-6">
-            <h2 className="text-base sm:text-lg font-medium">Review & Submit</h2>
-            
-            {/* Mobile-friendly review card */}
+            <h2 className="text-base sm:text-lg font-medium">
+              Review & Submit
+            </h2>
+
             <div className="bg-gray-50 p-4 sm:p-6 rounded-lg space-y-4">
-              <h3 className="font-medium text-sm sm:text-base">Student Information</h3>
+              <h3 className="font-medium text-sm sm:text-base">
+                Student Information
+              </h3>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="bg-white p-3 rounded-lg">
                   <p className="text-xs text-gray-500">Full Name</p>
                   <p className="font-medium text-sm break-words">
-                    {studentData.name.first_name} {studentData.name.last_name}
+                    {studentData.name?.first_name || '—'}{' '}
+                    {studentData.name?.last_name || ''}
                   </p>
                 </div>
+
                 <div className="bg-white p-3 rounded-lg">
                   <p className="text-xs text-gray-500">Class</p>
-                  <p className="font-medium text-sm">{studentData.class.name}</p>
+                  <p className="font-medium text-sm">
+                    {studentData.class?.name || '—'}
+                  </p>
                 </div>
+
                 <div className="bg-white p-3 rounded-lg sm:col-span-2">
                   <p className="text-xs text-gray-500">Primary Guardian</p>
                   <p className="font-medium text-sm break-words">
@@ -189,87 +236,90 @@ export default function StudentRegistrationPage() {
                   onContinuingToggle={setIsContinuingGuardian2}
                   onContinuingIdChange={setContinuingGuardian2ID}
                   onVerify={getContinuingGuardian2Info}
-                  onRemove={() => {
-                    setShowGuardian2(false);
-                    setIsContinuingGuardian2(false);
-                    setContinuingGuardian2ID('');
-                    updateStudentData({
-                      guardian2: {
-                        full_name: '',
-                        contact: '',
-                        nin: '',
-                        email: '',
-                        relationship: '',
-                      }
-                    });
-                  }}
+                  onRemove={handleRemoveSecondaryGuardian}
                 />
               </div>
             )}
           </div>
         );
+
       default:
         return null;
     }
   };
 
-  // Mobile step indicator
   const MobileStepIndicator = () => (
-    <div className="md:hidden mb-4 text-secondary">
+    <div className="md:hidden mb-4 text-secondary relative">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-gray-700">
-          Step {currentStep} of {steps.length}: {steps[currentStep - 1].label}
+          Step {currentStep} of {steps.length}: {currentStepMeta.label}
         </span>
+
         <button
-          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          type="button"
+          onClick={() => setShowMobileMenu((prev) => !prev)}
           className="p-2 hover:bg-gray-100 rounded-lg transition"
+          aria-label="Open step menu"
         >
           <Menu className="w-5 h-5 text-gray-600" />
         </button>
       </div>
-      
-      {/* Mobile step progress dots */}
+
       <div className="flex gap-1">
         {steps.map((step) => (
           <div
             key={step.id}
             className={clsx(
-              "flex-1 h-1 rounded-full transition",
-              step.id === currentStep && "bg-red-600",
-              step.id < currentStep && "bg-green-500",
-              step.id > currentStep && "bg-gray-200"
+              'flex-1 h-1 rounded-full transition',
+              step.id === currentStep && 'bg-red-600',
+              completedSteps.includes(step.id) && 'bg-green-500',
+              step.id > currentStep &&
+                !completedSteps.includes(step.id) &&
+                'bg-gray-200'
             )}
           />
         ))}
       </div>
 
-      {/* Mobile step menu dropdown */}
       {showMobileMenu && (
-        <div className="absolute mt-2 right-4 left-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute mt-2 right-0 left-0 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
           {steps.map((step) => {
-            const isAccessible = completedSteps.includes(step.id) || step.id === currentStep || step.id === currentStep + 1;
+            const isAccessible =
+              completedSteps.includes(step.id) ||
+              step.id === currentStep ||
+              step.id === currentStep + 1;
+
             const isCompleted = completedSteps.includes(step.id);
-            
+
             return (
               <button
                 key={step.id}
-                onClick={() => isAccessible && handleStepClick(step.id)}
+                type="button"
+                onClick={() => handleStepClick(step.id)}
                 className={clsx(
-                  "w-full px-4 py-3 text-left border-b last:border-b-0 flex items-center justify-between",
-                  isAccessible ? "hover:bg-gray-50" : "opacity-50 cursor-not-allowed",
-                  step.id === currentStep && "bg-red-50"
+                  'w-full px-4 py-3 text-left border-b last:border-b-0 flex items-center justify-between',
+                  isAccessible
+                    ? 'hover:bg-gray-50'
+                    : 'opacity-50 cursor-not-allowed',
+                  step.id === currentStep && 'bg-red-50'
                 )}
                 disabled={!isAccessible}
               >
                 <div className="flex items-center gap-3">
-                  <div className={clsx(
-                    "w-6 h-6 rounded-full flex items-center justify-center text-xs",
-                    isCompleted ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"
-                  )}>
+                  <div
+                    className={clsx(
+                      'w-6 h-6 rounded-full flex items-center justify-center text-xs',
+                      isCompleted
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    )}
+                  >
                     {isCompleted ? <Check className="w-3 h-3" /> : step.id}
                   </div>
+
                   <span className="text-sm font-medium">{step.label}</span>
                 </div>
+
                 {step.id === currentStep && (
                   <span className="text-xs text-gray-600">Current</span>
                 )}
@@ -285,7 +335,6 @@ export default function StudentRegistrationPage() {
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8 text-secondary">
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-          {/* Progress Bar - Hidden on mobile, we use MobileStepIndicator instead */}
           <div className="hidden md:block">
             <FormProgress
               steps={steps}
@@ -294,25 +343,22 @@ export default function StudentRegistrationPage() {
             />
           </div>
 
-          {/* Mobile Step Indicator */}
           <MobileStepIndicator />
 
-          {/* Step Content */}
           <div className="mt-4 sm:mt-8 min-h-[300px] sm:min-h-[400px]">
             {renderStep()}
           </div>
 
-          {/* Navigation */}
           <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between gap-3">
             <button
               type="button"
               onClick={handleBack}
               disabled={currentStep === 1}
               className={clsx(
-                "px-4 py-2.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 transition order-2 sm:order-1",
+                'px-4 py-2.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 transition order-2 sm:order-1',
                 currentStep === 1
-                  ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                  : "text-gray-700 hover:bg-gray-100 border border-gray-300"
+                  ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                  : 'text-gray-700 hover:bg-gray-100 border border-gray-300'
               )}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -343,10 +389,10 @@ export default function StudentRegistrationPage() {
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className={clsx(
-                    "flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-white rounded-lg transition flex items-center justify-center gap-2 text-sm",
+                    'flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-white rounded-lg transition flex items-center justify-center gap-2 text-sm',
                     isLoading
-                      ? "bg-red-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700"
+                      ? 'bg-red-400 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700'
                   )}
                 >
                   {isLoading ? (
@@ -363,14 +409,15 @@ export default function StudentRegistrationPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="mt-4 text-center text-xs sm:text-sm text-gray-500">
-          <p>Fields marked with <span className="text-red-500">*</span> are required</p>
+          <p>
+            Fields marked with <span className="text-red-500">*</span> are
+            required
+          </p>
           <p className="mt-1">Registration ID will be auto-generated</p>
         </div>
       </div>
 
-      {/* Success Modal - Make it mobile-friendly */}
       {showSuccess && submittedData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">

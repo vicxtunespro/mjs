@@ -58,8 +58,6 @@ export default function DashboardLayout({
       }
       topbar={
         <TopBar
-          title="Dashboard"
-          subtitle="Manage your workspace from one place"
           user={{
             name: "John Doe",
             email: "john@example.com",

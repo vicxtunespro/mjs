@@ -1,6 +1,7 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { usePageHeaderStore } from "@/store/usePageHeaderStore";
 import {
   Bell,
   ChevronDown,
@@ -36,8 +37,6 @@ export type TopBarUser = {
 };
 
 export type TopBarProps = {
-  title: string;
-  subtitle?: string;
   user?: TopBarUser;
   notifications?: TopBarNotification[];
   searchPlaceholder?: string;
@@ -67,7 +66,7 @@ function formatTimeAgo(time: string): string {
   const then = new Date(time);
   const diffMs = now.getTime() - then.getTime();
   const diffMins = Math.floor(diffMs / 60000);
-  
+
   if (diffMins < 1) return "Just now";
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
@@ -75,8 +74,6 @@ function formatTimeAgo(time: string): string {
 }
 
 export function TopBar({
-  title,
-  subtitle,
   user,
   notifications = [],
   searchPlaceholder = "Search...",
@@ -86,12 +83,13 @@ export function TopBar({
   className,
   onSearch,
 }: TopBarProps) {
+  const { title, subtitle } = usePageHeaderStore();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  
+
   const unreadCount = notifications.filter((item) => item.unread).length;
   const hasNotifications = notifications.length > 0;
 
@@ -183,13 +181,14 @@ export function TopBar({
                 <Menu className="h-5 w-5" />
               </button>
             )}
-            
+
             <div className="min-w-0">
-              <h1 className="text-base sm:text-lg md:text-xl font-semibold tracking-tight text-gray-900 truncate">
+              <h1 className="truncate text-base font-semibold tracking-tight text-gray-900 sm:text-lg md:text-xl">
                 {title}
               </h1>
+
               {subtitle && (
-                <p className="hidden sm:block text-xs md:text-sm text-gray-500 truncate">
+                <p className="hidden truncate text-xs text-gray-500 sm:block md:text-sm">
                   {subtitle}
                 </p>
               )}
@@ -383,7 +382,7 @@ export function TopBar({
                         {user.initials}
                       </span>
                     )}
-                    
+
                     <div className="hidden md:block text-left">
                       <p className="text-sm font-medium text-gray-900 leading-tight">
                         {user.name.split(' ')[0]}
@@ -394,7 +393,7 @@ export function TopBar({
                         </p>
                       )}
                     </div>
-                    
+
                     <ChevronDown className="hidden sm:block h-3.5 w-3.5 text-gray-400 transition group-data-[state=open]:rotate-180" />
                   </button>
                 </DropdownMenu.Trigger>
