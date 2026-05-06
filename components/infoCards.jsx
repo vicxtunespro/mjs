@@ -77,7 +77,7 @@ const InfoCard = ({id, count, title, filters, icon}) => {
           border border-primary dark:border-secondary-minus
           p-4 rounded-lg shadow-md md:min-w-72'
         >
-            <a href={`/admin/${title.toLowerCase().replace(/ /g, '-')}`}>
+            <Link href={`/admin/${title.toLowerCase().replace(/ /g, '-')}`}>
               <div className='flex items-center justify-between'>
                   <div className='leading-tight mb-4 flex flex-col items-start'>
                       <p className='text-4xl font-semibold text-secondary dark:text-primary'>{`${count}`}</p>
@@ -89,7 +89,7 @@ const InfoCard = ({id, count, title, filters, icon}) => {
                       </span>
                   </div>
               </div>
-            </a>
+            </Link>
             <div className="flex gap-0.5 text-xs ">
                 {filters && filters.map(({id, title}) => (
                   <FilterBtn key={id} id={id} title={title} activeFilter={activeFilter} setActiveFilter={setActiveFilter} />

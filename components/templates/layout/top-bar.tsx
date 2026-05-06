@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
 export type TopBarNotification = {
   id: string;
@@ -323,7 +324,7 @@ export function TopBar({
                                 asChild
                                 className="outline-none"
                               >
-                                <a href={notification.href}>{content}</a>
+                                <Link href={notification.href}>{content}</Link>
                               </DropdownMenu.Item>
                             ) : (
                               <DropdownMenu.Item
