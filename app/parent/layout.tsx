@@ -1,12 +1,12 @@
 import ProtectedLayout from "@/components/auth/ProtectedLayout";
 
-export default function StudentLayout({
+export default function ParentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedLayout allowedRoles={["student"]}>
+    <ProtectedLayout allowedRoles={["parent"]}>
       {children}
     </ProtectedLayout>
   );

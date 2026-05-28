@@ -6,6 +6,8 @@ import LearnersTable from '@/components/tables/clientsTable';
 import StudentSummary from '@/components/charts/studentSummary';
 import studentsData from '@/src/data/students.json';
 import { getStudents } from '@/src/modules/students/students.services.ts'
+import AuthGuard from '@/components/auth/AuthGuard';
+
 
 export default function Dashboard() {
   const [studentsData, setStudentsData] = useState([]);
@@ -28,15 +30,19 @@ export default function Dashboard() {
     fetchStudentsData();
   })
   return (
-    <div className='flex flex-col bg-gradient-to-br from-primary to-primary-midtone
-          dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
-          border border-primary dark:border-secondary-minus'>
-      <InfoCardArea />
-      <StudentSummary data={studentsData} />
-      <LearnersTable />
-      {/* <EventManagementSystem /> */}
-      {/* <UnderConstruction /> */}
-      {/* <AdmissionSystem /> */}
-    </div>
+    <AuthGuard
+      allowedRoles={['school_admin']}
+    >
+      <div className='flex flex-col bg-gradient-to-br from-primary to-primary-midtone
+            dark:bg-gradient-to-br dark:from-background-dark dark:to-secondary
+            border border-primary dark:border-secondary-minus'>
+        <InfoCardArea />
+        <StudentSummary data={studentsData} />
+        <LearnersTable />
+        {/* <EventManagementSystem /> */}
+        {/* <UnderConstruction /> */}
+        {/* <AdmissionSystem /> */}
+      </div>
+    </AuthGuard>
   )
 }

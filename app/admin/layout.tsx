@@ -2,6 +2,7 @@ import Modal from '@/components/Data Models/modal'
 import type { ReactNode } from "react";
 import { DashboardShell } from "@/components/templates/layout/dashboard-shell";
 import type { SideNavGroup } from "@/components/templates/layout/side-nav";
+import ProtectedLayout from "@/components/auth/ProtectedLayout";
 
 const schoolNavGroups: SideNavGroup[] = [
   {
@@ -96,9 +97,11 @@ export default function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <DashboardShell groups={schoolNavGroups}>
-      <Modal />
-      {children}
-    </DashboardShell>
+    <ProtectedLayout allowedRoles={["school_admin"]}>
+      <DashboardShell groups={schoolNavGroups}>
+        <Modal />
+        {children}
+      </DashboardShell>
+    </ProtectedLayout>
   );
 }

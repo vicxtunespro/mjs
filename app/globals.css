@@ -123,6 +123,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), sans-serif;
   }
 }
 
@@ -166,4 +167,16 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+input,
+select,
+textarea {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
 }
