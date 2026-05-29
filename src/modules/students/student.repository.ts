@@ -1,37 +1,77 @@
+// student.repository.ts
+
 import { SERVER_API_URL } from "@/app.config";
 
-export const fetchStudents = async () => {
-  const response = await fetch(`${SERVER_API_URL}/students`);
+
+// Retrive the access token for the browser
+function getAuthHeaders() {
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("accessToken")
+      : null;
+
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+async function handleResponse(response: Response) {
+  const result = await response.json();
 
   if (!response.ok) {
-    throw new Error('Failed to fetch students');
+    throw new Error(result.message || "Request failed");
   }
 
-  const result = await response.json();
   return result.data;
+}
+
+
+export const createStudent = async (
+  payload: any
+) => {
+
+  const response =
+    await fetch(
+      `${SERVER_API_URL}/students`,
+      {
+        method: "POST",
+
+        headers: getAuthHeaders(),
+
+        body: JSON.stringify(
+          payload
+        ),
+      }
+    );
+
+
+  return handleResponse(response);
+};
+
+export const fetchStudents = async () => {
+  const response = await fetch(`${SERVER_API_URL}/students`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  return handleResponse(response);
 };
 
 export const fetchStudent = async (id: string) => {
-  const response = await fetch(`${SERVER_API_URL}/students/${id}`);
+  const response = await fetch(`${SERVER_API_URL}/students/${id}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch student');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return handleResponse(response);
 };
 
 export const deleteStudent = async (id: string): Promise<void> => {
   const response = await fetch(`${SERVER_API_URL}/students/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    method: "DELETE",
+    headers: getAuthHeaders(),
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to delete student (status: ${response.status})`);
-  }
+  await handleResponse(response);
 };
-
